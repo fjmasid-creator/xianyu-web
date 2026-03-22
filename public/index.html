@@ -286,9 +286,9 @@
             if (result.success) {
                 const list = document.getElementById('userList');
                 list.innerHTML = result.users.map(u => `
-                    <div class="user-item" onclick="viewUserData('${u._id}', '${u.username}')">
-                        <span class="name">${u.username}${u.isAdmin ? '<span class="badge">管理员</span>' : ''}</span>
-                        <span class="count">点击查看</span>
+                    <div class="user-item">
+                        <span class="name" onclick="viewUserData('${u._id}', '${u.username}')">${u.username}${u.isAdmin ? '<span class="badge">管理员</span>' : ''}</span>
+                        <span class="count">${!u.isAdmin ? '<button onclick="deleteUser(\''+u._id+'\',\''+u.username+'\')" style="padding:4px 8px;background:#dc2626;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px">删除</button>' : ''}</span>
                     </div>
                 `).join('');
             }
@@ -314,6 +314,24 @@
                 showToast('正在查看: ' + username + ' 的数据');
             } catch (err) {
                 showToast('加载失败');
+            }
+        }
+        
+        async function deleteUser(userId, username) {
+            if (!confirm('确定删除用户 ' + username + ' 吗？该用户的全部数据也将被删除！')) return;
+            
+            const res = await fetch('/api/deleteuser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminId: currentUser.id, targetUserId: userId })
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                showToast('用户已删除');
+                showUserManage();
+            } else {
+                showToast(result.error);
             }
         }
         

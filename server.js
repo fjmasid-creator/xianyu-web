@@ -126,6 +126,32 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
+// 删除用户（只有主账号可用）
+app.post('/api/deleteuser', async (req, res) => {
+    try {
+        const { adminId, targetUserId } = req.body;
+        
+        const admin = await usersCollection.findOne({ _id: new ObjectId(adminId), isAdmin: true });
+        if (!admin) {
+            return res.json({ success: false, error: '无权操作' });
+        }
+        
+        // 不能删除主账号
+        const targetUser = await usersCollection.findOne({ _id: new ObjectId(targetUserId) });
+        if (targetUser && targetUser.isAdmin) {
+            return res.json({ success: false, error: '不能删除主账号' });
+        }
+        
+        // 删除用户及其数据
+        await usersCollection.deleteOne({ _id: new ObjectId(targetUserId) });
+        await dataCollection.deleteMany({ userId: targetUserId });
+        
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+});
+
 // 获取某个用户的数据（主账号可以查看所有用户）
 app.get('/api/userdata', async (req, res) => {
     try {
