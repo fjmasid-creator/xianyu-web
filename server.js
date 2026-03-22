@@ -17,8 +17,13 @@ let dbConnected = false;
 async function connectDB() {
     try {
         const client = new MongoClient(MONGO_URI, {
-            serverSelectionTimeoutMS: 5000,
+            serverSelectionTimeoutMS: 10000,
             socketTimeoutMS: 45000,
+            maxPoolSize: 10,
+            minPoolSize: 1,
+            connectTimeoutMS: 10000,
+            retryWrites: true,
+            retryReads: true,
         });
         
         await client.connect();
