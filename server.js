@@ -138,6 +138,42 @@ app.post('/api/deleteuser', async (req, res) => {
     }
 });
 
+app.get('/api/userdata', async (req, res) => {
+    try {
+        if (!dbConnected) return res.json({ success: false, error: '数据库未连接' });
+        
+        const adminId = req.query.adminId;
+        const targetUserId = req.query.targetUserId;
+        
+        const admin = await usersCollection.findOne({ _id: new ObjectId(adminId), isAdmin: true });
+        if (!admin) return res.json({ success: false, error: '无权访问' });
+        
+        const records = await dataCollection.find({ userId: targetUserId }).sort({ date: -1 }).toArray();
+        
+        const excelData = [
+            ['收手续费', '', '', '', '', '', '', '', '', '免手续费'],
+            ['日期', '闲鱼付款金额', '1.6的手续费', '支付宝到账', '盒马实际支付', '最多可退', '盒马会员卡利润', '实际利润', '', '日期', '闲鱼付款金额', '盒马实际支付', '手续费（1.6%）', '支付宝到账', '最多可退', '利润']
+        ];
+        
+        const feeR = records.filter(r => r.type === 'fee');
+        const nofeeR = records.filter(r => r.type === 'nofee');
+        const maxRows = Math.max(feeR.length, nofeeR.length);
+        
+        for (let i = 0; i < maxRows; i++) {
+            const fee = feeR[i] || {};
+            const nofee = nofeeR[i] || {};
+            excelData.push([
+                fee.date || '', fee.xianyuAmount || '', fee.fee || '', fee.alipay || '', fee.hemaActual || '', fee.refund || '', '', fee.actualProfit || '',
+                '', nofee.date || '', nofee.xianyuAmount || '', nofee.hemaActual || '', nofee.fee || '', nofee.alipay || '', nofee.refund || '', nofee.actualProfit || ''
+            ]);
+        }
+        
+        res.json({ success: true, data: excelData });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+});
+
 app.get('/api/data', async (req, res) => {
     try {
         if (!dbConnected) return res.json({ success: false, error: '数据库未连接' });
