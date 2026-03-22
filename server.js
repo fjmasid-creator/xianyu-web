@@ -50,13 +50,7 @@ app.post('/api/save', (req, res) => {
     try {
         const { data } = req.body;
         inMemoryData = data;
-        
-        const worksheet = XLSX.utils.aoa_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, worksheet, 'Sheet1');
-        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        
-        res.json({ success: true, buffer: excelBuffer.toString('base64') });
+        res.json({ success: true });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     }
@@ -64,18 +58,13 @@ app.post('/api/save', (req, res) => {
 
 // 导出Excel
 app.get('/api/export', (req, res) => {
-    try {
-        const worksheet = XLSX.utils.aoa_to_sheet(inMemoryData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, worksheet, 'Sheet1');
-        const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        
-        res.setHeader('Content-Disposition', 'attachment; filename=闲鱼代结账.xlsx');
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.send(buffer);
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+    const worksheet = XLSX.utils.aoa_to_sheet(inMemoryData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, worksheet, 'Sheet1');
+    const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+    res.setHeader('Content-Disposition', 'attachment; filename=闲鱼代结账.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.send(buffer);
 });
 
 // 导出 Vercel handler
