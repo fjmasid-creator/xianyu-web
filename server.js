@@ -7,26 +7,44 @@ const { MongoClient } = require('mongodb');
 const app = express();
 
 // MongoDB 配置
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://xianyu_user:xianyu123@cluster0.go2qogg.mongodb.net/?appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://xianyu_user:xianyu123@cluster0.go2qogg.mongodb.net/?appName=Cluster0&retryWrites=true&w=majority';
 const DB_NAME = 'xianyu_db';
 const COLLECTION_NAME = 'data';
 
-let db;
-let collection;
+// 全局缓存
+let cachedClient = null;
+let cachedDb = null;
+let cachedCollection = null;
 
-// 连接到 MongoDB
+// 连接到 MongoDB - 改进版，带重试
 async function connectDB() {
+    // 如果已经有连接，直接返回
+    if (cachedCollection) {
+        return cachedCollection;
+    }
+    
     try {
-        const client = new MongoClient(MONGO_URI);
+        const client = new MongoClient(MONGO_URI, {
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        });
+        
         await client.connect();
-        db = client.db(DB_NAME);
-        collection = db.collection(COLLECTION_NAME);
-        console.log('Connected to MongoDB');
+        const db = client.db(DB_NAME);
+        const collection = db.collection(COLLECTION_NAME);
+        
+        // 测试连接
+        await collection ping();
+        console.log('MongoDB connected successfully');
+        
+        cachedClient = client;
+        cachedDb = db;
+        cachedCollection = collection;
         
         // 如果没有数据，初始化默认数据
         const count = await collection.countDocuments();
         if (count === 0) {
-            // 加载 Excel 数据
             try {
                 const fs = require('fs');
                 const EXCEL_FILE = path.join(__dirname, 'data', '闲鱼代结账.xlsx');
@@ -38,14 +56,24 @@ async function connectDB() {
                     console.log('Excel data loaded to MongoDB');
                 }
             } catch (err) {
-                console.log('Using default data');
+                console.log('Using empty data');
             }
         }
+        
+        return collection;
     } catch (err) {
         console.error('MongoDB connection error:', err);
+        throw err;
     }
 }
-connectDB();
+
+// 确保连接可用
+async function getCollection() {
+    if (!cachedCollection) {
+        await connectDB();
+    }
+    return cachedCollection;
+}
 
 app.use(cors());
 app.use(express.json());
@@ -65,15 +93,15 @@ app.get('/', (req, res) => {
 // 获取数据
 app.get('/api/data', async (req, res) => {
     try {
-        if (collection) {
-            const doc = await collection.findOne({ name: 'xianyu_data' });
-            if (doc) {
-                res.json({ success: true, data: doc.data });
-                return;
-            }
+        const collection = await getCollection();
+        const doc = await collection.findOne({ name: 'xianyu_data' });
+        if (doc) {
+            res.json({ success: true, data: doc.data });
+        } else {
+            res.json({ success: true, data: [] });
         }
-        res.json({ success: true, data: [] });
     } catch (err) {
+        console.error('Error fetching data:', err);
         res.status(500).json({ success: false, error: err.message });
     }
 });
@@ -82,15 +110,18 @@ app.get('/api/data', async (req, res) => {
 app.post('/api/save', async (req, res) => {
     try {
         const { data } = req.body;
-        if (collection) {
-            await collection.updateOne(
-                { name: 'xianyu_data' },
-                { $set: { data: data, updatedAt: new Date() } },
-                { upsert: true }
-            );
-        }
+        const collection = await getCollection();
+        
+        const result = await collection.updateOne(
+            { name: 'xianyu_data' },
+            { $set: { data: data, updatedAt: new Date() } },
+            { upsert: true }
+        );
+        
+        console.log('Data saved, upserted:', result.upsertedId);
         res.json({ success: true });
     } catch (err) {
+        console.error('Error saving data:', err);
         res.status(500).json({ success: false, error: err.message });
     }
 });
@@ -98,11 +129,9 @@ app.post('/api/save', async (req, res) => {
 // 导出Excel
 app.get('/api/export', async (req, res) => {
     try {
-        let data = [];
-        if (collection) {
-            const doc = await collection.findOne({ name: 'xianyu_data' });
-            if (doc) data = doc.data;
-        }
+        const collection = await getCollection();
+        const doc = await collection.findOne({ name: 'xianyu_data' });
+        const data = doc ? doc.data : [];
         
         const worksheet = XLSX.utils.aoa_to_sheet(data);
         const wb = XLSX.utils.book_new();
@@ -113,6 +142,7 @@ app.get('/api/export', async (req, res) => {
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(buffer);
     } catch (err) {
+        console.error('Error exporting:', err);
         res.status(500).send(err.message);
     }
 });
