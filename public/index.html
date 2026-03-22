@@ -5,144 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>闲鱼代结账</title>
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
         
-        /* 顶部导航 */
+        /* 容器 - 居中显示 */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+        @media (min-width: 768px) {
+            .container { max-width: 560px; }
+        }
+        
+        /* 顶部 */
         .header {
-            background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
             color: white;
-            padding: 20px 16px;
+            padding: 24px 20px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
         }
-        .header h1 { font-size: 18px; font-weight: 600; }
-        .header .subtitle { font-size: 12px; opacity: 0.8; margin-top: 4px; }
-        
-        /* 统计卡片 */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 16px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .stat-card.today { border-left: 4px solid #1890ff; }
-        .stat-card.month { border-left: 4px solid #52c41a; }
-        .stat-card .label { font-size: 12px; color: #666; }
-        .stat-card .value { font-size: 20px; font-weight: bold; color: #333; margin-top: 4px; }
-        .stat-card .value.positive { color: #52c41a; }
-        .stat-card .value.negative { color: #ff4d4f; }
-        
-        /* 标签切换 */
-        .tabs {
-            display: flex;
-            background: white;
-            padding: 0 16px;
-            border-bottom: 1px solid #eee;
-        }
-        .tab {
-            padding: 12px 16px;
-            font-size: 14px;
-            color: #666;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        .tab.active { color: #1890ff; border-bottom-color: #1890ff; font-weight: 500; }
-        
-        /* 筛选 */
-        .filter-bar {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            background: white;
-            gap: 8px;
-            overflow-x: auto;
-        }
-        .filter-bar select, .filter-bar input {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-        }
-        .filter-bar select { min-width: 100px; }
-        
-        /* 列表 */
-        .record-list { padding: 12px 16px; }
-        .record-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .record-card:active { transform: scale(0.98); }
-        .record-card .date { 
-            font-size: 14px; 
-            color: #333; 
-            font-weight: 500;
+        .header-content {
+            max-width: 560px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .record-card .amount { 
-            font-size: 18px; 
-            font-weight: bold; 
-            color: #52c41a;
-            margin-top: 8px;
+        .header h1 { font-size: 20px; font-weight: 600; }
+        .header .total {
+            text-align: right;
         }
-        .record-card .amount.expense { color: #ff4d4f; }
-        .record-card .tags { margin-top: 8px; display: flex; gap: 8px; }
-        .record-card .tag {
-            font-size: 12px;
-            padding: 2px 8px;
-            background: #f5f5f5;
-            border-radius: 4px;
-            color: #666;
-        }
-        .record-card .tag.fee { background: #e6f7ff; color: #1890ff; }
+        .header .total .label { font-size: 12px; opacity: 0.8; }
+        .header .total .value { font-size: 24px; font-weight: bold; }
         
-        /* 底部按钮 */
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 20px 0;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+        }
+        .stat-card.highlight { 
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            color: white;
+        }
+        .stat-card .label { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
+        .stat-card.highlight .label { color: rgba(255,255,255,0.8); }
+        .stat-card .value { font-size: 18px; font-weight: 700; }
+        .stat-card .value.green { color: var(--success); }
+        .stat-card .value.orange { color: var(--warning); }
+        
+        /* 快捷操作 */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .quick-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .quick-btn.primary { 
+            background: var(--primary); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        .quick-btn.secondary { 
+            background: white; 
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        /* 月份筛选 */
+        .month-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .month-selector button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .month-selector span { font-weight: 500; }
+        
+        /* 记录列表 */
+        .record-list { padding-bottom: 20px; }
+        .record-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .record-card:hover { 
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
+        }
+        .record-card .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .record-card .date { 
+            font-size: 14px; 
+            font-weight: 600;
+            color: var(--text);
+        }
+        .record-card .profit { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: var(--success);
+        }
+        .record-card .details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .record-card .detail-item {
+            text-align: center;
+            padding: 8px;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+        .record-card .detail-item .label { font-size: 11px; color: var(--text-light); }
+        .record-card .detail-item .value { font-size: 13px; font-weight: 500; margin-top: 2px; }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+        
+        /* 底部 */
         .bottom-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: white;
-            padding: 12px 16px;
+            padding: 16px 20px;
             display: flex;
             gap: 12px;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 100;
         }
-        .btn {
+        .bottom-bar .btn {
             flex: 1;
             padding: 14px;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            text-align: center;
         }
-        .btn-primary { background: #1890ff; color: white; }
-        .btn-success { background: #52c41a; color: white; }
-        .btn-outline { background: white; border: 1px solid #ddd; color: #333; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); }
         
         /* 弹窗 */
         .modal {
@@ -155,212 +229,299 @@
             background: rgba(0,0,0,0.5);
             z-index: 1000;
             overflow-y: auto;
+            padding: 20px;
         }
-        .modal.active { display: block; }
+        .modal.active { display: flex; align-items: flex-start; justify-content: center; padding-top: 40px; }
         .modal-content {
             background: white;
-            margin: 20px;
-            border-radius: 16px;
-            padding: 20px;
-            max-width: 600px;
-            margin-bottom: 100px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 24px;
         }
-        .modal-header h2 { font-size: 18px; }
-        .modal-close { font-size: 24px; color: #999; cursor: pointer; }
+        .modal-header h2 { font-size: 18px; font-weight: 600; }
+        .modal-close { 
+            width: 32px; height: 32px; 
+            border: none; background: var(--bg);
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 18px;
+            color: var(--text-light);
+        }
         
         /* 表单 */
+        .form-section {
+            background: var(--bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-section h3 {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
         .form-group { margin-bottom: 16px; }
+        .form-group:last-child { margin-bottom: 0; }
         .form-group label { 
             display: block; 
-            font-size: 14px; 
-            color: #666; 
-            margin-bottom: 6px; 
+            font-size: 13px; 
+            color: var(--text-light); 
+            margin-bottom: 8px; 
         }
-        .form-group input, .form-group select {
+        .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             font-size: 16px;
+            transition: border-color 0.2s;
         }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .form-group input[readonly] {
+            background: #f1f5f9;
+            color: var(--text-light);
+        }
+        
         .form-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
         
-        /* 详情页 */
-        .detail-section {
-            background: #f9f9f9;
+        /* 计算结果展示 */
+        .calc-results {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .calc-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        .calc-item .label { font-size: 12px; color: var(--text-light); }
+        .calc-item .value { font-size: 16px; font-weight: 600; margin-top: 4px; }
+        .calc-item .value.green { color: var(--success); }
+        
+        /* 详情 */
+        .detail-header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+        .detail-header .label { font-size: 14px; opacity: 0.9; }
+        .detail-header .profit { font-size: 36px; font-weight: 700; margin-top: 8px; }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .detail-item {
+            background: var(--bg);
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 16px;
-        }
-        .detail-section h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 12px;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .detail-row:last-child { border: none; }
-        .detail-row .label { color: #666; }
-        .detail-row .value { font-weight: 500; }
-        .detail-row .value.green { color: #52c41a; }
-        .detail-row .value.red { color: #ff4d4f; }
-        
-        /* 空状态 */
-        .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #999;
         }
-        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+        .detail-item .label { font-size: 12px; color: var(--text-light); }
+        .detail-item .value { font-size: 16px; font-weight: 600; margin-top: 4px; }
         
-        /* Toast提示 */
+        .detail-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .detail-actions .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-danger { background: #fef2f2; color: var(--danger); }
+        .btn-edit { background: var(--primary); color: white; }
+        
+        /* Toast */
         .toast {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             color: white;
             padding: 16px 32px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 14px;
             z-index: 2000;
             display: none;
         }
         .toast.show { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         /* 加载 */
         .loading {
             text-align: center;
             padding: 40px;
-            color: #999;
-        }
-        
-        /* 操作按钮 */
-        .action-btns {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .action-btns .btn {
-            flex: 1;
-            padding: 10px;
-            font-size: 14px;
+            color: var(--text-light);
         }
         
         @media (min-width: 768px) {
-            .stats-container { grid-template-columns: repeat(4, 1fr); }
-            .record-list { max-width: 800px; margin: 0 auto; }
-            .modal-content { margin: 40px auto; }
+            body { padding: 40px 0; }
+            .container { 
+                background: white; 
+                border-radius: 24px; 
+                box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+                padding: 32px;
+                margin-bottom: 40px;
+            }
+            .bottom-bar {
+                position: relative;
+                box-shadow: none;
+                padding: 20px 0 0;
+            }
         }
     </style>
 </head>
 <body>
     <!-- 顶部 -->
     <div class="header">
-        <h1>📊 闲鱼代结账</h1>
-        <div class="subtitle" id="lastUpdate">最后更新: --</div>
-    </div>
-    
-    <!-- 统计 -->
-    <div class="stats-container">
-        <div class="stat-card today">
-            <div class="label">今日收入</div>
-            <div class="value positive" id="todayIncome">¥0</div>
-        </div>
-        <div class="stat-card today">
-            <div class="label">今日支出</div>
-            <div class="value negative" id="todayExpense">¥0</div>
-        </div>
-        <div class="stat-card month">
-            <div class="label">本月收入</div>
-            <div class="value positive" id="monthIncome">¥0</div>
-        </div>
-        <div class="stat-card month">
-            <div class="label">本月支出</div>
-            <div class="value negative" id="monthExpense">¥0</div>
+        <div class="header-content">
+            <div>
+                <h1>💰 闲鱼代结账</h1>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">记录每一笔收入</div>
+            </div>
+            <div class="total">
+                <div class="label">累计收入</div>
+                <div class="value" id="totalProfit">¥0</div>
+            </div>
         </div>
     </div>
     
-    <!-- 标签 -->
-    <div class="tabs">
-        <div class="tab active" data-tab="all">全部</div>
-        <div class="tab" data-tab="fee">收手续费</div>
-        <div class="tab" data-tab="nofee">免手续费</div>
+    <div class="container">
+        <!-- 统计 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">今日收入</div>
+                <div class="value green" id="todayProfit">¥0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">本月收入</div>
+                <div class="value green" id="monthProfit">¥0</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="label">记录条数</div>
+                <div class="value" id="recordCount">0</div>
+            </div>
+        </div>
+        
+        <!-- 快捷操作 -->
+        <div class="quick-actions">
+            <button class="quick-btn secondary" onclick="exportExcel()">📥 导出</button>
+            <button class="quick-btn primary" onclick="openAddModal()">➕ 记一笔</button>
+        </div>
+        
+        <!-- 月份筛选 -->
+        <div class="month-selector">
+            <button onclick="changeMonth(-1)">‹</button>
+            <span id="currentMonth">2026年3月</span>
+            <button onclick="changeMonth(1)">›</button>
+        </div>
+        
+        <!-- 记录列表 -->
+        <div class="record-list" id="recordList">
+            <div class="loading">加载中...</div>
+        </div>
     </div>
     
-    <!-- 筛选 -->
-    <div class="filter-bar">
-        <select id="yearFilter">
-            <option value="">全部年份</option>
-        </select>
-        <select id="monthFilter">
-            <option value="">全部月份</option>
-        </select>
-        <input type="date" id="dateFilter" placeholder="按日期筛选">
-    </div>
-    
-    <!-- 列表 -->
-    <div class="record-list" id="recordList">
-        <div class="loading">加载中...</div>
-    </div>
-    
-    <!-- 底部按钮 -->
+    <!-- 底部 -->
     <div class="bottom-bar">
-        <button class="btn btn-outline" onclick="exportExcel()">📥 导出</button>
-        <button class="btn btn-primary" onclick="openAddModal()">➕ 添加记录</button>
+        <button class="btn btn-outline" onclick="exportExcel()">📥 导出Excel</button>
+        <button class="btn btn-primary" onclick="openAddModal()">➕ 记一笔</button>
     </div>
     
-    <!-- 添加/编辑弹窗 -->
+    <!-- 添加弹窗 -->
     <div class="modal" id="addModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">添加记录</h2>
-                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h2>📝 记一笔收入</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
+            
             <form id="recordForm" onsubmit="saveRecord(event)">
-                <div class="form-group">
-                    <label>日期 *</label>
-                    <input type="date" name="date" required>
+                <div class="form-section">
+                    <h3>基本信息</h3>
+                    <div class="form-group">
+                        <label>日期</label>
+                        <input type="date" name="date" id="inputDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>闲鱼付款金额 (¥) *</label>
+                        <input type="number" name="xianyuAmount" id="inputAmount" step="0.01" placeholder="请输入客户付款金额" required oninput="calcResults()">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>类型 *</label>
-                    <select name="type" required>
-                        <option value="fee">收手续费</option>
-                        <option value="nofee">免手续费</option>
-                    </select>
+                
+                <div class="form-section">
+                    <h3>💡 自动计算结果</h3>
+                    <div class="calc-results">
+                        <div class="calc-item">
+                            <div class="label">1.6% 手续费</div>
+                            <div class="value" id="calcFee">¥0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <div class="label">支付宝到账</div>
+                            <div class="value" id="calcAlipay">¥0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <div class="label">盒马实际支付</div>
+                            <input type="number" name="hemaActual" id="inputHema" step="0.01" placeholder="请输入" style="margin-top:4px;padding:8px;font-size:14px" oninput="calcResults()">
+                        </div>
+                        <div class="calc-item">
+                            <div class="label">最多可退</div>
+                            <div class="value" id="calcRefund">¥0.00</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>闲鱼付款金额 *</label>
-                    <input type="number" name="xianyuAmount" step="0.01" placeholder="请输入金额" required>
+                
+                <div class="form-section">
+                    <h3>💰 利润计算</h3>
+                    <div class="calc-results">
+                        <div class="calc-item">
+                            <div class="label">盒马会员卡利润 (32%)</div>
+                            <div class="value" id="calcHemaProfit">¥0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <div class="label">实际利润</div>
+                            <div class="value green" id="calcTotalProfit">¥0.00</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>盒马实际支付</label>
-                    <input type="number" name="hemaActual" step="0.01" placeholder="盒马实际扣款">
-                </div>
-                <div class="form-group">
-                    <label>备注</label>
-                    <input type="text" name="remark" placeholder="可选备注">
-                </div>
+                
                 <input type="hidden" name="id" id="recordId">
-                <button type="submit" class="btn btn-success" style="width:100%">保存</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">💾 保存记录</button>
             </form>
         </div>
     </div>
@@ -369,13 +530,15 @@
     <div class="modal" id="detailModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>记录详情</h2>
-                <span class="modal-close" onclick="closeDetail()">&times;</span>
+                <h2>📋 记录详情</h2>
+                <button class="modal-close" onclick="closeDetail()">×</button>
             </div>
+            
             <div id="detailContent"></div>
-            <div class="action-btns">
-                <button class="btn btn-outline" onclick="deleteRecord()">🗑️ 删除</button>
-                <button class="btn btn-primary" onclick="editRecord()">✏️ 编辑</button>
+            
+            <div class="detail-actions">
+                <button class="btn btn-danger" onclick="deleteRecord()">🗑️ 删除</button>
+                <button class="btn btn-edit" onclick="editRecord()">✏️ 编辑</button>
             </div>
         </div>
     </div>
@@ -385,15 +548,16 @@
     
     <script>
         let allRecords = [];
-        let currentTab = 'all';
+        let currentMonth = new Date();
         let currentDetail = null;
         
         // 初始化
         async function init() {
             await loadData();
-            setupFilters();
             renderRecords();
             updateStats();
+            // 默认今天
+            document.getElementById('inputDate').value = new Date().toISOString().substring(0, 10);
         }
         
         // 加载数据
@@ -402,15 +566,9 @@
                 const res = await fetch('/api/data');
                 const result = await res.json();
                 if (result.success && result.data.length > 2) {
-                    // 解析Excel数据为记录格式
                     allRecords = parseExcelData(result.data);
                     // 按日期降序
                     allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-                    
-                    const lastRecord = allRecords[0];
-                    if (lastRecord) {
-                        document.getElementById('lastUpdate').textContent = '最后更新: ' + lastRecord.date;
-                    }
                 }
             } catch (err) {
                 showToast('加载失败: ' + err.message);
@@ -420,88 +578,48 @@
         // 解析Excel数据
         function parseExcelData(data) {
             const records = [];
-            // 收手续费: 列索引 0-7
-            // 免手续费: 列索引 9-15
             for (let i = 2; i < data.length; i++) {
                 const row = data[i];
-                if (!row[0] && !row[9]) continue; // 跳过空行
+                if (!row[0]) continue; // 只取收手续费
                 
-                // 收手续费
-                if (row[0]) {
-                    records.push({
-                        id: 'fee_' + i,
-                        date: row[0],
-                        type: 'fee',
-                        xianyuAmount: parseFloat(row[1]) || 0,
-                        fee: parseFloat(row[2]) || 0,
-                        alipay: parseFloat(row[3]) || 0,
-                        hemaActual: parseFloat(row[4]) || 0,
-                        refund: parseFloat(row[5]) || 0,
-                        hemaProfit: parseFloat(row[6]) || 0,
-                        actualProfit: parseFloat(row[7]) || 0,
-                        raw: row
-                    });
-                }
-                
-                // 免手续费
-                if (row[9]) {
-                    records.push({
-                        id: 'nofee_' + i,
-                        date: row[9],
-                        type: 'nofee',
-                        xianyuAmount: parseFloat(row[10]) || 0,
-                        hemaActual: parseFloat(row[11]) || 0,
-                        fee: parseFloat(row[12]) || 0,
-                        alipay: parseFloat(row[13]) || 0,
-                        refund: parseFloat(row[14]) || 0,
-                        profit: parseFloat(row[15]) || 0,
-                        raw: row
-                    });
-                }
+                records.push({
+                    id: 'fee_' + i,
+                    date: row[0],
+                    xianyuAmount: parseFloat(row[1]) || 0,
+                    fee: parseFloat(row[2]) || 0,
+                    alipay: parseFloat(row[3]) || 0,
+                    hemaActual: parseFloat(row[4]) || 0,
+                    refund: parseFloat(row[5]) || 0,
+                    hemaProfit: parseFloat(row[6]) || 0,
+                    actualProfit: parseFloat(row[7]) || 0
+                });
             }
             return records;
         }
         
-        // 设置筛选器
-        function setupFilters() {
-            const years = [...new Set(allRecords.map(r => r.date?.substring(0, 4)))].filter(Boolean).sort().reverse();
-            const yearSelect = document.getElementById('yearFilter');
-            years.forEach(y => {
-                yearSelect.innerHTML += `<option value="${y}">${y}年</option>`;
-            });
-            
-            document.getElementById('yearFilter').addEventListener('change', renderRecords);
-            document.getElementById('monthFilter').addEventListener('change', renderRecords);
-            document.getElementById('dateFilter').addEventListener('change', renderRecords);
-            
-            // 标签切换
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    currentTab = tab.dataset.tab;
-                    renderRecords();
-                });
-            });
+        // 切换月份
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderRecords();
+            updateStats();
         }
         
-        // 渲染记录列表
+        // 更新月份显示
+        function updateMonthDisplay() {
+            const y = currentMonth.getFullYear();
+            const m = currentMonth.getMonth() + 1;
+            document.getElementById('currentMonth').textContent = `${y}年${m}月`;
+        }
+        
+        // 渲染记录
         function renderRecords() {
-            let filtered = [...allRecords];
+            updateMonthDisplay();
             
-            // 标签筛选
-            if (currentTab !== 'all') {
-                filtered = filtered.filter(r => r.type === currentTab);
-            }
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth() + 1;
+            const monthStr = `${year}-${String(month).padStart(2, '0')}`;
             
-            // 年月日筛选
-            const year = document.getElementById('yearFilter').value;
-            const month = document.getElementById('monthFilter').value;
-            const date = document.getElementById('dateFilter').value;
-            
-            if (year) filtered = filtered.filter(r => r.date?.startsWith(year));
-            if (month) filtered = filtered.filter(r => r.date?.substring(0, 7) === `${year || '202'}-${month}`);
-            if (date) filtered = filtered.filter(r => r.date === date);
+            const filtered = allRecords.filter(r => r.date?.startsWith(monthStr));
             
             const list = document.getElementById('recordList');
             
@@ -509,8 +627,8 @@
                 list.innerHTML = `
                     <div class="empty-state">
                         <div class="icon">📭</div>
-                        <p>暂无记录</p>
-                        <p style="font-size:12px;margin-top:8px">点击下方"添加记录"开始</p>
+                        <p>本月暂无记录</p>
+                        <p style="font-size:13px;margin-top:8px;color:#94a3b8">点击下方"记一笔"添加</p>
                     </div>
                 `;
                 return;
@@ -518,16 +636,23 @@
             
             list.innerHTML = filtered.map(r => `
                 <div class="record-card" onclick="showDetail('${r.id}')">
-                    <div class="date">
-                        <span>${r.date}</span>
-                        <span class="tag ${r.type === 'fee' ? 'fee' : ''}">${r.type === 'fee' ? '收手续费' : '免手续费'}</span>
+                    <div class="top">
+                        <span class="date">${r.date}</span>
+                        <span class="profit">+¥${r.actualProfit.toFixed(2)}</span>
                     </div>
-                    <div class="amount ${r.type === 'fee' ? '' : 'expense'}">
-                        ${r.type === 'fee' ? '+' : ''}¥${(r.actualProfit || r.profit || 0).toFixed(2)}
-                    </div>
-                    <div class="tags">
-                        <span class="tag">闲鱼: ¥${r.xianyuAmount}</span>
-                        <span class="tag">盒马: ¥${r.hemaActual}</span>
+                    <div class="details">
+                        <div class="detail-item">
+                            <div class="label">闲鱼付款</div>
+                            <div class="value">¥${r.xianyuAmount}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">到账</div>
+                            <div class="value">¥${r.alipay}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">盒马消费</div>
+                            <div class="value">¥${r.hemaActual}</div>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -536,26 +661,41 @@
         // 更新统计
         function updateStats() {
             const today = new Date().toISOString().substring(0, 10);
-            const thisMonth = new Date().toISOString().substring(0, 7);
+            const thisMonth = currentMonth.toISOString().substring(0, 7);
             
-            let todayIncome = 0, todayExpense = 0, monthIncome = 0, monthExpense = 0;
+            let todayProfit = 0, monthProfit = 0, totalProfit = 0;
             
             allRecords.forEach(r => {
-                const profit = r.actualProfit || r.profit || 0;
-                if (r.date === today) {
-                    if (r.type === 'fee') todayIncome += profit;
-                    else todayExpense += profit;
-                }
-                if (r.date?.startsWith(thisMonth)) {
-                    if (r.type === 'fee') monthIncome += profit;
-                    else monthExpense += profit;
-                }
+                const profit = r.actualProfit || 0;
+                totalProfit += profit;
+                if (r.date === today) todayProfit += profit;
+                if (r.date?.startsWith(thisMonth)) monthProfit += profit;
             });
             
-            document.getElementById('todayIncome').textContent = '¥' + todayIncome.toFixed(2);
-            document.getElementById('todayExpense').textContent = '¥' + todayExpense.toFixed(2);
-            document.getElementById('monthIncome').textContent = '¥' + monthIncome.toFixed(2);
-            document.getElementById('monthExpense').textContent = '¥' + monthExpense.toFixed(2);
+            document.getElementById('todayProfit').textContent = '¥' + todayProfit.toFixed(2);
+            document.getElementById('monthProfit').textContent = '¥' + monthProfit.toFixed(2);
+            document.getElementById('totalProfit').textContent = '¥' + totalProfit.toFixed(2);
+            document.getElementById('recordCount').textContent = allRecords.length;
+        }
+        
+        // 计算结果
+        function calcResults() {
+            const amount = parseFloat(document.getElementById('inputAmount').value) || 0;
+            const hema = parseFloat(document.getElementById('inputHema').value) || 0;
+            
+            const fee = amount * 0.016;
+            const alipay = amount - fee;
+            const refund = alipay - hema;
+            const hemaProfit = refund * 0.32;
+            const totalProfit = hemaProfit + fee * 0.1;
+            
+            document.getElementById('calcFee').textContent = '¥' + fee.toFixed(2);
+            document.getElementById('calcAlipay').textContent = '¥' + alipay.toFixed(2);
+            document.getElementById('calcRefund').textContent = '¥' + refund.toFixed(2);
+            document.getElementById('calcHemaProfit').textContent = '¥' + hemaProfit.toFixed(2);
+            document.getElementById('calcTotalProfit').textContent = '¥' + totalProfit.toFixed(2);
+            
+            return { fee, alipay, refund, hemaProfit, totalProfit, hema };
         }
         
         // 显示详情
@@ -564,23 +704,36 @@
             if (!record) return;
             currentDetail = record;
             
-            const content = document.getElementById('detailContent');
-            const profit = record.actualProfit || record.profit || 0;
-            
-            content.innerHTML = `
-                <div class="detail-section">
-                    <h3>基本信息</h3>
-                    <div class="detail-row"><span class="label">日期</span><span class="value">${record.date}</span></div>
-                    <div class="detail-row"><span class="label">类型</span><span class="value">${record.type === 'fee' ? '收手续费' : '免手续费'}</span></div>
+            document.getElementById('detailContent').innerHTML = `
+                <div class="detail-header">
+                    <div class="label">实际利润</div>
+                    <div class="profit">+¥${record.actualProfit.toFixed(2)}</div>
                 </div>
-                <div class="detail-section">
-                    <h3>金额明细</h3>
-                    <div class="detail-row"><span class="label">闲鱼付款</span><span class="value">¥${record.xianyuAmount}</span></div>
-                    <div class="detail-row"><span class="label">手续费(1.6%)</span><span class="value">¥${record.fee}</span></div>
-                    <div class="detail-row"><span class="label">支付宝到账</span><span class="value">¥${record.alipay}</span></div>
-                    <div class="detail-row"><span class="label">盒马实际支付</span><span class="value">¥${record.hemaActual}</span></div>
-                    <div class="detail-row"><span class="label">最多可退</span><span class="value">¥${record.refund}</span></div>
-                    <div class="detail-row"><span class="label">利润</span><span class="value ${profit >= 0 ? 'green' : 'red'}">¥${profit}</span></div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="label">日期</div>
+                        <div class="value">${record.date}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">闲鱼付款</div>
+                        <div class="value">¥${record.xianyuAmount}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">1.6%手续费</div>
+                        <div class="value">¥${record.fee.toFixed(2)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">支付宝到账</div>
+                        <div class="value">¥${record.alipay.toFixed(2)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">盒马实际</div>
+                        <div class="value">¥${record.hemaActual}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">最多可退</div>
+                        <div class="value">¥${record.refund.toFixed(2)}</div>
+                    </div>
                 </div>
             `;
             
@@ -592,31 +745,27 @@
             document.getElementById('detailModal').classList.remove('active');
         }
         
-        // 编辑记录
+        // 编辑
         function editRecord() {
             if (!currentDetail) return;
             closeDetail();
             
             const form = document.getElementById('recordForm');
             form.date.value = currentDetail.date;
-            form.type.value = currentDetail.type;
             form.xianyuAmount.value = currentDetail.xianyuAmount;
-            form.hemaActual.value = currentDetail.hemaActual || '';
-            form.remark.value = '';
+            form.hemaActual.value = currentDetail.hemaActual;
             document.getElementById('recordId').value = currentDetail.id;
-            document.getElementById('modalTitle').textContent = '编辑记录';
+            calcResults();
             document.getElementById('addModal').classList.add('active');
         }
         
-        // 删除记录
+        // 删除
         async function deleteRecord() {
             if (!currentDetail || !confirm('确定删除这条记录吗？')) return;
             
-            // 从数据中移除
             const idx = allRecords.findIndex(r => r.id === currentDetail.id);
             if (idx > -1) allRecords.splice(idx, 1);
             
-            // 同步到Excel格式并保存
             await saveToExcel();
             closeDetail();
             renderRecords();
@@ -624,13 +773,13 @@
             showToast('删除成功');
         }
         
-        // 打开添加弹窗
+        // 打开添加
         function openAddModal() {
             const form = document.getElementById('recordForm');
             form.reset();
-            form.date.value = new Date().toISOString().substring(0, 10);
+            document.getElementById('inputDate').value = new Date().toISOString().substring(0, 10);
             document.getElementById('recordId').value = '';
-            document.getElementById('modalTitle').textContent = '添加记录';
+            calcResults();
             document.getElementById('addModal').classList.add('active');
         }
         
@@ -643,44 +792,33 @@
         async function saveRecord(e) {
             e.preventDefault();
             const form = e.target;
+            const amount = parseFloat(form.xianyuAmount.value) || 0;
+            const hema = parseFloat(form.hemaActual.value) || 0;
+            
+            const calc = calcResults();
+            
             const data = {
                 id: form.id.value,
                 date: form.date.value,
-                type: form.type.value,
-                xianyuAmount: parseFloat(form.xianyuAmount.value) || 0,
-                hemaActual: parseFloat(form.hemaActual.value) || 0,
-                remark: form.remark.value
+                xianyuAmount: amount,
+                hemaActual: hema,
+                fee: calc.fee,
+                alipay: calc.alipay,
+                refund: calc.refund,
+                hemaProfit: calc.hemaProfit,
+                actualProfit: calc.totalProfit
             };
             
-            // 计算衍生字段
-            if (data.type === 'fee') {
-                data.fee = (data.xianyuAmount * 0.016).toFixed(2);
-                data.alipay = (data.xianyuAmount - data.fee).toFixed(2);
-                data.hemaActual = data.hemaActual || 0;
-                data.refund = (data.alipay - data.hemaActual).toFixed(2);
-                data.hemaProfit = (data.refund * 0.32).toFixed(2);
-                data.actualProfit = (parseFloat(data.hemaProfit) + parseFloat(data.fee) * 0.1).toFixed(2);
-            } else {
-                data.fee = 0;
-                data.alipay = data.xianyuAmount;
-                data.hemaActual = data.hemaActual || 0;
-                data.refund = (data.alipay - data.hemaActual).toFixed(2);
-                data.profit = (data.refund * 0.32).toFixed(2);
-            }
-            
-            // 更新或添加记录
             if (data.id) {
                 const idx = allRecords.findIndex(r => r.id === data.id);
                 if (idx > -1) allRecords[idx] = { ...allRecords[idx], ...data };
             } else {
-                data.id = data.type + '_' + Date.now();
+                data.id = 'fee_' + Date.now();
                 allRecords.unshift(data);
             }
             
-            // 排序
             allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            // 保存
             await saveToExcel();
             closeModal();
             renderRecords();
@@ -688,24 +826,17 @@
             showToast('保存成功');
         }
         
-        // 保存到Excel格式
+        // 保存到Excel
         async function saveToExcel() {
-            // 构建Excel格式的数据
             const excelData = [
                 ['收手续费', '', '', '', '', '', '', '', '', '免手续费'],
                 ['日期', '闲鱼付款金额', '1.6的手续费', '支付宝到账', '盒马实际支付', '最多可退', '盒马会员卡利润', '实际利润', '', '日期', '闲鱼付款金额', '盒马实际支付', '手续费（1.6%）', '支付宝到账', '最多可退', '利润']
             ];
             
             allRecords.forEach(r => {
-                if (r.type === 'fee') {
-                    excelData.push([
-                        r.date, r.xianyuAmount, r.fee, r.alipay, r.hemaActual, r.refund, r.hemaProfit, r.actualProfit, '', '', '', '', '', '', '', ''
-                    ]);
-                } else {
-                    excelData.push([
-                        '', '', '', '', '', '', '', '', '', r.date, r.xianyuAmount, r.hemaActual, r.fee, r.alipay, r.refund, r.profit
-                    ]);
-                }
+                excelData.push([
+                    r.date, r.xianyuAmount, r.fee.toFixed(2), r.alipay.toFixed(2), r.hemaActual, r.refund.toFixed(2), r.hemaProfit.toFixed(2), r.actualProfit.toFixed(2), '', '', '', '', '', '', '', ''
+                ]);
             });
             
             await fetch('/api/save', {
@@ -715,12 +846,12 @@
             });
         }
         
-        // 导出Excel
+        // 导出
         function exportExcel() {
             window.location.href = '/api/export';
         }
         
-        // 显示提示
+        // 提示
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
