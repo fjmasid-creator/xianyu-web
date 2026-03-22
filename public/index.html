@@ -144,7 +144,6 @@
             color: var(--text-light);
         }
         
-        /* 底部占位，防止内容被遮挡 */
         .bottom-space { height: 20px; }
         
         .modal {
@@ -349,7 +348,6 @@
             <button onclick="changeMonth(1)">›</button>
         </div>
         
-        <!-- 只保留上面一组按钮 -->
         <div class="action-row">
             <button class="btn btn-outline" onclick="exportExcel()">📥 导出</button>
             <button class="btn btn-primary" onclick="openAddModal()">➕ 记一笔</button>
@@ -359,7 +357,6 @@
             <div class="empty-state"><p>暂无记录</p></div>
         </div>
         
-        <!-- 底部占位 -->
         <div class="bottom-space"></div>
     </div>
     
@@ -550,31 +547,29 @@
             let html = '';
             
             if (amount > 0) {
+                // 手续费 = 闲鱼 × 1.6%
+                const fee = amount * 0.016;
+                // 支付宝 = 闲鱼 - 手续费
+                const alipay = amount - fee;
+                
+                let refund, profit;
+                
                 if (recordType === 'fee') {
-                    // 收手续费公式
-                    const fee = amount * 0.016;
-                    const alipay = amount - fee;
-                    const refund = alipay - hema;
-                    const profit = refund * 0.32;
-                    
-                    html = `
-                        <div class="calc-item"><div class="Label">1.6%手续费</div><div class="Value">¥${fee.toFixed(2)}</div></div>
-                        <div class="calc-item"><div class="Label">支付宝到账</div><div class="Value">¥${alipay.toFixed(2)}</div></div>
-                        <div class="calc-item"><div class="Label">最多可退</div><div class="Value">¥${refund.toFixed(2)}</div></div>
-                        <div class="calc-item"><div class="Label">利润(32%)</div><div class="Value green">¥${profit.toFixed(2)}</div></div>
-                    `;
+                    // 收手续费: 最多可退 = 支付宝 - 盒马, 利润 = 盒马 × 4%
+                    refund = alipay - hema;
+                    profit = hema * 0.04;
                 } else {
-                    // 免手续费公式
-                    const refund = amount - hema;
-                    const profit = refund * 0.16;
-                    
-                    html = `
-                        <div class="calc-item"><div class="Label">支付宝到账</div><div class="Value">¥${amount.toFixed(2)}</div></div>
-                        <div class="calc-item"><div class="Label">最多可退</div><div class="Value">¥${refund.toFixed(2)}</div></div>
-                        <div class="calc-item"><div class="Label">盒马消费</div><div class="Value">¥${hema.toFixed(2)}</div></div>
-                        <div class="calc-item"><div class="Label">利润(16%)</div><div class="Value green">¥${profit.toFixed(2)}</div></div>
-                    `;
+                    // 免手续费: 最多可退 = 闲鱼 - 盒马, 利润 = 盒马 × 4% - 手续费
+                    refund = amount - hema;
+                    profit = hema * 0.04 - fee;
                 }
+                
+                html = `
+                    <div class="calc-item"><div class="Label">1.6%手续费</div><div class="Value">¥${fee.toFixed(2)}</div></div>
+                    <div class="calc-item"><div class="Label">支付宝到账</div><div class="Value">¥${alipay.toFixed(2)}</div></div>
+                    <div class="calc-item"><div class="Label">最多可退</div><div class="Value">¥${refund.toFixed(2)}</div></div>
+                    <div class="calc-item"><div class="Label">利润(4%)</div><div class="Value green">¥${profit.toFixed(2)}</div></div>
+                `;
             } else {
                 html = `
                     <div class="calc-item"><div class="Label">-</div><div class="Value">¥0.00</div></div>
@@ -653,20 +648,21 @@
             const hema = parseFloat(form.hemaActual.value) || 0;
             const type = form.type.value;
             
-            let fee, alipay, refund, profit;
+            // 手续费 = 闲鱼 × 1.6%
+            const fee = amount * 0.016;
+            // 支付宝 = 闲鱼 - 手续费
+            const alipay = amount - fee;
+            
+            let refund, profit;
             
             if (type === 'fee') {
-                // 收手续费
-                fee = amount * 0.016;
-                alipay = amount - fee;
+                // 收手续费: 最多可退 = 支付宝 - 盒马, 利润 = 盒马 × 4%
                 refund = alipay - hema;
-                profit = refund * 0.32;
+                profit = hema * 0.04;
             } else {
-                // 免手续费
-                fee = 0;
-                alipay = amount;
+                // 免手续费: 最多可退 = 闲鱼 - 盒马, 利润 = 盒马 × 4% - 手续费
                 refund = amount - hema;
-                profit = refund * 0.16;
+                profit = hema * 0.04 - fee;
             }
             
             let data = {
