@@ -20,17 +20,115 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .app-container {
+        .login-container {
+            width: 100%;
+            max-width: 360px;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .login-header p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .login-tabs {
+            display: flex;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .login-tabs .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text-light);
+            border-bottom: 2px solid transparent;
+        }
+        .login-tabs .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .login-form {
+            display: none;
+        }
+        .login-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .error-msg {
+            color: #dc2626;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+        .error-msg.show {
+            display: block;
+        }
+        
+        .main-app {
+            display: none;
+            width: 100%;
             max-width: 420px;
-            margin: 0 auto;
             background: var(--card-bg);
             min-height: 100vh;
             box-shadow: 0 0 40px rgba(0,0,0,0.1);
         }
         @media (min-width: 440px) {
-            .app-container {
+            .main-app {
                 min-height: auto;
                 border-radius: 20px;
                 margin: 20px auto;
@@ -50,6 +148,15 @@
         .header h1 { font-size: 16px; font-weight: 600; }
         .header .total-value { font-size: 22px; font-weight: 700; }
         .header .total-label { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
         
         .stats-grid {
             display: grid;
@@ -211,14 +318,6 @@
             text-transform: uppercase;
         }
         
-        .form-group { margin-bottom: 12px; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-group label { 
-            display: block; 
-            font-size: 12px; 
-            color: var(--text-light); 
-            margin-bottom: 6px; 
-        }
         .form-group input {
             width: 100%;
             padding: 12px;
@@ -316,10 +415,61 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <!-- 登录页面 -->
+    <div class="login-container" id="loginPage">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>💰 闲鱼代结账</h1>
+                <p>多用户版本</p>
+            </div>
+            
+            <div class="login-tabs">
+                <div class="tab active" onclick="switchTab('login')">登录</div>
+                <div class="tab" onclick="switchTab('register')">注册</div>
+            </div>
+            
+            <!-- 登录表单 -->
+            <div class="login-form active" id="loginForm">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="loginUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码">
+                </div>
+                <button class="login-btn" onclick="doLogin()">登录</button>
+                <div class="error-msg" id="loginError"></div>
+            </div>
+            
+            <!-- 注册表单 -->
+            <div class="login-form" id="registerForm">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="regUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="regPassword" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" id="regPassword2" placeholder="请再次输入密码">
+                </div>
+                <button class="login-btn" onclick="doRegister()">注册</button>
+                <div class="error-msg" id="regError"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 主应用 -->
+    <div class="main-app" id="mainApp">
         <div class="header">
             <div class="header-top">
                 <h1>💰 闲鱼代结账</h1>
+                <button class="logout-btn" onclick="logout()">退出</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px">
                 <div>
                     <div class="total-value" id="totalProfit">¥0</div>
                     <div class="total-label">累计收入</div>
@@ -429,10 +579,109 @@
     <div class="toast" id="toast"></div>
     
     <script>
+        let currentUser = null;
         let allRecords = [];
         let currentMonth = new Date();
         let currentDetail = null;
         let recordType = 'fee';
+        
+        // 检查登录状态
+        function checkLogin() {
+            const saved = localStorage.getItem('xianyu_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                showMainApp();
+                init();
+            }
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.login-tabs .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelectorAll('.login-tabs .tab')[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelectorAll('.login-tabs .tab')[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+        
+        async function doLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                errorEl.textContent = '请填写用户名和密码';
+                errorEl.classList.add('show');
+                return;
+            }
+            
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                currentUser = result.user;
+                localStorage.setItem('xianyu_user', JSON.stringify(currentUser));
+                showMainApp();
+                init();
+            } else {
+                errorEl.textContent = result.error;
+                errorEl.classList.add('show');
+            }
+        }
+        
+        async function doRegister() {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            const password2 = document.getElementById('regPassword2').value;
+            const errorEl = document.getElementById('regError');
+            
+            if (!username || !password) {
+                errorEl.textContent = '请填写用户名和密码';
+                errorEl.classList.add('show');
+                return;
+            }
+            
+            if (password !== password2) {
+                errorEl.textContent = '两次密码不一致';
+                errorEl.classList.add('show');
+                return;
+            }
+            
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                showToast('注册成功，请登录');
+                switchTab('login');
+            } else {
+                errorEl.textContent = result.error;
+                errorEl.classList.add('show');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('xianyu_user');
+            currentUser = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+        
+        function showMainApp() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
         
         async function init() {
             await loadData();
@@ -444,14 +693,16 @@
         
         async function loadData() {
             try {
-                const res = await fetch('/api/data');
+                const res = await fetch('/api/data?userId=' + currentUser.id);
                 const result = await res.json();
-                if (result.success && result.data.length > 2) {
+                if (result.success && result.data && result.data.length > 2) {
                     allRecords = parseExcelData(result.data);
-                    allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+                } else {
+                    allRecords = [];
                 }
             } catch (err) {
                 showToast('加载失败');
+                allRecords = [];
             }
         }
         
@@ -547,19 +798,15 @@
             let html = '';
             
             if (amount > 0) {
-                // 手续费 = 闲鱼 × 1.6%
                 const fee = amount * 0.016;
-                // 支付宝 = 闲鱼 - 手续费
                 const alipay = amount - fee;
                 
                 let refund, profit;
                 
                 if (recordType === 'fee') {
-                    // 收手续费: 最多可退 = 支付宝 - 盒马, 利润 = 盒马 × 4%
                     refund = alipay - hema;
                     profit = hema * 0.04;
                 } else {
-                    // 免手续费: 最多可退 = 闲鱼 - 盒马, 利润 = 盒马 × 4% - 手续费
                     refund = amount - hema;
                     profit = hema * 0.04 - fee;
                 }
@@ -623,7 +870,7 @@
             if (!currentDetail || !confirm('确定删除？')) return;
             const idx = allRecords.findIndex(r => r.id === currentDetail.id);
             if (idx > -1) allRecords.splice(idx, 1);
-            await saveToExcel();
+            await saveToServer();
             closeDetail();
             renderRecords();
             updateStats();
@@ -648,19 +895,15 @@
             const hema = parseFloat(form.hemaActual.value) || 0;
             const type = form.type.value;
             
-            // 手续费 = 闲鱼 × 1.6%
             const fee = amount * 0.016;
-            // 支付宝 = 闲鱼 - 手续费
             const alipay = amount - fee;
             
             let refund, profit;
             
             if (type === 'fee') {
-                // 收手续费: 最多可退 = 支付宝 - 盒马, 利润 = 盒马 × 4%
                 refund = alipay - hema;
                 profit = hema * 0.04;
             } else {
-                // 免手续费: 最多可退 = 闲鱼 - 盒马, 利润 = 盒马 × 4% - 手续费
                 refund = amount - hema;
                 profit = hema * 0.04 - fee;
             }
@@ -686,39 +929,25 @@
             }
             
             allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-            await saveToExcel();
+            
+            await saveToServer();
             closeModal();
             renderRecords();
             updateStats();
             showToast('保存成功');
         }
         
-        async function saveToExcel() {
-            const excelData = [
-                ['收手续费', '', '', '', '', '', '', '', '', '免手续费'],
-                ['日期', '闲鱼付款金额', '1.6的手续费', '支付宝到账', '盒马实际支付', '最多可退', '盒马会员卡利润', '实际利润', '', '日期', '闲鱼付款金额', '盒马实际支付', '手续费（1.6%）', '支付宝到账', '最多可退', '利润']
-            ];
-            
-            allRecords.forEach(r => {
-                if (r.type === 'fee') {
-                    excelData.push([
-                        r.date, r.xianyuAmount, r.fee.toFixed(2), r.alipay.toFixed(2), r.hemaActual, r.refund.toFixed(2), '', r.actualProfit.toFixed(2), '', '', '', '', '', '', '', ''
-                    ]);
-                } else {
-                    excelData.push([
-                        '', '', '', '', '', '', '', '', '', r.date, r.xianyuAmount, r.hemaActual, r.fee.toFixed(2), r.alipay.toFixed(2), r.refund.toFixed(2), r.actualProfit.toFixed(2)
-                    ]);
-                }
-            });
-            
+        async function saveToServer() {
             await fetch('/api/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: excelData })
+                body: JSON.stringify({ userId: currentUser.id, records: allRecords })
             });
         }
         
-        function exportExcel() { window.location.href = '/api/export'; }
+        function exportExcel() {
+            window.location.href = '/api/export?userId=' + currentUser.id;
+        }
         
         function showToast(msg) {
             const t = document.getElementById('toast');
@@ -727,7 +956,8 @@
             setTimeout(() => t.classList.remove('show'), 2000);
         }
         
-        init();
+        // 初始化
+        checkLogin();
     </script>
 </body>
 </html>
