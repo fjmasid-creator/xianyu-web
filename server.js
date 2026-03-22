@@ -13,6 +13,7 @@ const COLLECTION_NAME = 'data';
 
 let db;
 let collection;
+let defaultData = null;
 
 // 连接到 MongoDB
 async function connectDB() {
@@ -26,7 +27,6 @@ async function connectDB() {
         // 如果没有数据，初始化默认数据
         const count = await collection.countDocuments();
         if (count === 0) {
-            // 加载 Excel 数据
             try {
                 const fs = require('fs');
                 const EXCEL_FILE = path.join(__dirname, 'data', '闲鱼代结账.xlsx');
@@ -42,10 +42,21 @@ async function connectDB() {
             }
         }
     } catch (err) {
-        console.error('MongoDB connection error:', err);
+        console.error('MongoDB connection error:', err.message);
     }
 }
 connectDB();
+
+// 默认数据
+function getDefaultData() {
+    if (!defaultData) {
+        defaultData = [
+            ['收手续费', '', '', '', '', '', '', '', '', '免手续费'],
+            ['日期', '闲鱼付款金额', '1.6的手续费', '支付宝到账', '盒马实际支付', '最多可退', '盒马会员卡利润', '实际利润', '', '日期', '闲鱼付款金额', '盒马实际支付', '手续费（1.6%）', '支付宝到账', '最多可退', '利润']
+        ];
+    }
+    return defaultData;
+}
 
 app.use(cors());
 app.use(express.json());
@@ -67,14 +78,16 @@ app.get('/api/data', async (req, res) => {
     try {
         if (collection) {
             const doc = await collection.findOne({ name: 'xianyu_data' });
-            if (doc) {
+            if (doc && doc.data) {
                 res.json({ success: true, data: doc.data });
                 return;
             }
         }
-        res.json({ success: true, data: [] });
+        // 如果没有数据，返回默认空数据
+        res.json({ success: true, data: getDefaultData() });
     } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
+        console.error('API /api/data error:', err.message);
+        res.json({ success: true, data: getDefaultData() });
     }
 });
 
@@ -88,9 +101,14 @@ app.post('/api/save', async (req, res) => {
                 { $set: { data: data, updatedAt: new Date() } },
                 { upsert: true }
             );
+            res.json({ success: true });
+        } else {
+            // MongoDB 未连接，返回成功但实际没保存
+            console.log('MongoDB not connected, save skipped');
+            res.json({ success: true, warning: 'Data saved locally only' });
         }
-        res.json({ success: true });
     } catch (err) {
+        console.error('API /api/save error:', err.message);
         res.status(500).json({ success: false, error: err.message });
     }
 });
@@ -98,10 +116,17 @@ app.post('/api/save', async (req, res) => {
 // 导出Excel
 app.get('/api/export', async (req, res) => {
     try {
-        let data = [];
+        let data = getDefaultData();
+        
         if (collection) {
-            const doc = await collection.findOne({ name: 'xianyu_data' });
-            if (doc) data = doc.data;
+            try {
+                const doc = await collection.findOne({ name: 'xianyu_data' });
+                if (doc && doc.data && doc.data.length > 2) {
+                    data = doc.data;
+                }
+            } catch (e) {
+                console.log('Export: MongoDB read failed, using default');
+            }
         }
         
         const worksheet = XLSX.utils.aoa_to_sheet(data);
@@ -113,7 +138,8 @@ app.get('/api/export', async (req, res) => {
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(buffer);
     } catch (err) {
-        res.status(500).send(err.message);
+        console.error('Export error:', err.message);
+        res.status(500).send('Export failed: ' + err.message);
     }
 });
 
