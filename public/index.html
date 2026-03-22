@@ -22,7 +22,6 @@
             min-height: 100vh;
         }
         
-        /* 居中容器 */
         .app-container {
             max-width: 420px;
             margin: 0 auto;
@@ -35,11 +34,9 @@
                 min-height: auto;
                 border-radius: 20px;
                 margin: 20px auto;
-                overflow: hidden;
             }
         }
         
-        /* 顶部 */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
             color: white;
@@ -54,7 +51,6 @@
         .header .total-value { font-size: 22px; font-weight: 700; }
         .header .total-label { font-size: 11px; opacity: 0.8; margin-top: 2px; }
         
-        /* 统计 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -72,7 +68,6 @@
         .stat-card .value { font-size: 14px; font-weight: 700; margin-top: 2px; }
         .stat-card .value.green { color: var(--success); }
         
-        /* 月份 */
         .month-bar {
             display: flex;
             align-items: center;
@@ -89,7 +84,6 @@
         }
         .month-bar span { font-size: 14px; font-weight: 500; }
         
-        /* 操作 */
         .action-row {
             display: flex;
             gap: 10px;
@@ -107,7 +101,6 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-outline { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
         
-        /* 列表 */
         .record-list { padding: 0 20px 20px; }
         .record-card {
             background: var(--bg);
@@ -123,6 +116,14 @@
         }
         .record-card .date { font-size: 13px; font-weight: 500; color: var(--text); }
         .record-card .profit { font-size: 16px; font-weight: 700; color: var(--success); }
+        .record-card .type-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            background: #fef3c7;
+            color: #d97706;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
         .record-card .details {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -143,7 +144,6 @@
             color: var(--text-light);
         }
         
-        /* 底部 */
         .bottom-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -167,7 +167,6 @@
             cursor: pointer;
         }
         
-        /* 弹窗 */
         .modal {
             display: none;
             position: fixed;
@@ -200,7 +199,6 @@
             cursor: pointer; 
         }
         
-        /* 类型选择 */
         .type-selector {
             display: flex;
             gap: 10px;
@@ -221,7 +219,6 @@
         }
         .type-btn .text { font-size: 13px; font-weight: 500; }
         
-        /* 表单 */
         .form-section {
             background: var(--bg);
             border-radius: 12px;
@@ -252,9 +249,7 @@
             color: var(--text);
             background: var(--card-bg);
         }
-        .form-group input::placeholder { color: #9ca3af; }
         
-        /* 计算结果 */
         .calc-results {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -271,7 +266,6 @@
         .calc-item .value { font-size: 13px; font-weight: 600; margin-top: 2px; color: var(--text); }
         .calc-item .value.green { color: var(--success); }
         
-        /* 保存按钮 */
         .save-btn {
             width: 100%;
             padding: 14px;
@@ -285,7 +279,6 @@
             color: white;
         }
         
-        /* 详情 */
         .detail-header {
             text-align: center;
             padding: 20px;
@@ -328,7 +321,6 @@
         .btn-danger { background: #fef2f2; color: #dc2626; }
         .btn-edit { background: var(--primary); color: white; }
         
-        /* Toast */
         .toast {
             position: fixed;
             top: 50%; left: 50%;
@@ -346,7 +338,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- 顶部 -->
         <div class="header">
             <div class="header-top">
                 <h1>💰 闲鱼代结账</h1>
@@ -357,7 +348,6 @@
             </div>
         </div>
         
-        <!-- 统计 -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="label">今日</div>
@@ -373,25 +363,22 @@
             </div>
         </div>
         
-        <!-- 月份 -->
         <div class="month-bar">
             <button onclick="changeMonth(-1)">‹</button>
             <span id="currentMonth">2026年3月</span>
             <button onclick="changeMonth(1)">›</button>
         </div>
         
-        <!-- 操作 -->
+        <!-- 只保留一组按钮 -->
         <div class="action-row">
             <button class="btn btn-outline" onclick="exportExcel()">📥 导出</button>
             <button class="btn btn-primary" onclick="openAddModal()">➕ 记一笔</button>
         </div>
         
-        <!-- 列表 -->
         <div class="record-list" id="recordList">
             <div class="empty-state"><p>暂无记录</p></div>
         </div>
         
-        <!-- 底部 -->
         <div class="bottom-bar">
             <button class="btn btn-outline" onclick="exportExcel()">📥 导出</button>
             <button class="btn btn-primary" onclick="openAddModal()">➕ 记一笔</button>
@@ -406,7 +393,6 @@
                 <button class="modal-close" onclick="closeModal()"></button>
             </div>
             
-            <!-- 类型选择 -->
             <div class="type-selector">
                 <div class="type-btn active" id="typeFee" onclick="selectType('fee')">
                     <div class="text">收手续费</div>
@@ -439,9 +425,7 @@
                 
                 <div class="form-section">
                     <h3>计算结果</h3>
-                    <div class="calc-results" id="calcResults">
-                        <!-- 动态填充 -->
-                    </div>
+                    <div class="calc-results" id="calcResults"></div>
                 </div>
                 
                 <input type="hidden" name="id" id="recordId">
@@ -510,7 +494,6 @@
                     alipay: parseFloat(row[3]) || 0,
                     hemaActual: parseFloat(row[4]) || 0,
                     refund: parseFloat(row[5]) || 0,
-                    hemaProfit: parseFloat(row[6]) || 0,
                     actualProfit: parseFloat(row[7]) || 0
                 });
             }
@@ -542,7 +525,7 @@
             list.innerHTML = filtered.map(r => `
                 <div class="record-card" onclick="showDetail('${r.id}')">
                     <div class="top">
-                        <span class="date">${r.date}</span>
+                        <span class="date">${r.date}<span class="type-tag">${r.type === 'fee' ? '收手续费' : '免手续费'}</span></span>
                         <span class="profit">+¥${r.actualProfit.toFixed(2)}</span>
                     </div>
                     <div class="details">
@@ -587,28 +570,40 @@
             
             let html = '';
             
-            // 按Excel公式计算
-            // 收手续费: 手续费=闲鱼*1.6%, 支付宝=闲鱼-手续费, 最多可退=支付宝-盒马, 利润=最多可退*32%
-            // 免手续费: 手续费=闲鱼*1.6%, 支付宝=闲鱼-手续费, 最多可退=支付宝-盒马, 利润=最多可退*32%
-            
-            const fee = amount * 0.016;
-            const alipay = amount - fee;
-            const refund = alipay - hema;
-            const profit = refund * 0.32;
-            
             if (amount > 0) {
-                html = `
-                    <div class="calc-item"><div class="label">1.6%手续费</div><div class="value">¥${fee.toFixed(2)}</div></div>
-                    <div class="calc-item"><div class="label">支付宝到账</div><div class="value">¥${alipay.toFixed(2)}</div></div>
-                    <div class="calc-item"><div class="label">最多可退</div><div class="value">¥${refund.toFixed(2)}</div></div>
-                    <div class="calc-item"><div class="label">利润(32%)</div><div class="value green">¥${profit.toFixed(2)}</div></div>
-                `;
+                if (recordType === 'fee') {
+                    // 收手续费公式
+                    const fee = amount * 0.016;
+                    const alipay = amount - fee;
+                    const refund = alipay - hema;
+                    const profit = refund * 0.32;
+                    
+                    html = `
+                        <div class="calc-item"><div class="label">1.6%手续费</div><div class="value">¥${fee.toFixed(2)}</div></div>
+                        <div class="calc-item"><div class="label">支付宝到账</div><div class="value">¥${alipay.toFixed(2)}</div></div>
+                        <div class="calc-item"><div class="label">最多可退</div><div class="value">¥${refund.toFixed(2)}</div></div>
+                        <div class="calc-item"><div class="label">利润(32%)</div><div class="value green">¥${profit.toFixed(2)}</div></div>
+                    `;
+                } else {
+                    // 免手续费公式
+                    // 最多可退 = 闲鱼 - 盒马
+                    // 利润 = (闲鱼 - 盒马) × 16%
+                    const refund = amount - hema;
+                    const profit = refund * 0.16;
+                    
+                    html = `
+                        <div class="calc-item"><div class="label">支付宝到账</div><div class="value">¥${amount.toFixed(2)}</div></div>
+                        <div class="calc-item"><div class="label">最多可退</div><div class="value">¥${refund.toFixed(2)}</div></div>
+                        <div class="calc-item"><div class="label">盒马消费</div><div class="value">¥${hema.toFixed(2)}</div></div>
+                        <div class="calc-item"><div class="label">利润(16%)</div><div class="value green">¥${profit.toFixed(2)}</div></div>
+                    `;
+                }
             } else {
                 html = `
-                    <div class="calc-item"><div class="label">1.6%手续费</div><div class="value">¥0.00</div></div>
-                    <div class="calc-item"><div class="label">支付宝到账</div><div class="value">¥0.00</div></div>
-                    <div class="calc-item"><div class="label">最多可退</div><div class="value">¥0.00</div></div>
-                    <div class="calc-item"><div class="label">利润(32%)</div><div class="value green">¥0.00</div></div>
+                    <div class="calc-item"><div class="label">计算中...</div><div class="value">¥0.00</div></div>
+                    <div class="calc-item"><div class="label">-</div><div class="value">¥0.00</div></div>
+                    <div class="calc-item"><div class="label">-</div><div class="value">¥0.00</div></div>
+                    <div class="calc-item"><div class="label">-</div><div class="value">¥0.00</div></div>
                 `;
             }
             
@@ -622,7 +617,7 @@
             
             document.getElementById('detailContent').innerHTML = `
                 <div class="detail-header">
-                    <div class="label">利润</div>
+                    <div class="label">${r.type === 'fee' ? '收手续费' : '免手续费'} · 利润</div>
                     <div class="profit">+¥${r.actualProfit.toFixed(2)}</div>
                 </div>
                 <div class="detail-grid">
@@ -681,11 +676,21 @@
             const hema = parseFloat(form.hemaActual.value) || 0;
             const type = form.type.value;
             
-            // 按Excel公式计算
-            const fee = amount * 0.016;
-            const alipay = amount - fee;
-            const refund = alipay - hema;
-            const profit = refund * 0.32;
+            let fee, alipay, refund, profit;
+            
+            if (type === 'fee') {
+                // 收手续费
+                fee = amount * 0.016;
+                alipay = amount - fee;
+                refund = alipay - hema;
+                profit = refund * 0.32;
+            } else {
+                // 免手续费
+                fee = 0;
+                alipay = amount;
+                refund = amount - hema;
+                profit = refund * 0.16;
+            }
             
             let data = {
                 id: form.id.value,
@@ -722,9 +727,15 @@
             ];
             
             allRecords.forEach(r => {
-                excelData.push([
-                    r.date, r.xianyuAmount, r.fee.toFixed(2), r.alipay.toFixed(2), r.hemaActual, r.refund.toFixed(2), '', r.actualProfit.toFixed(2), '', '', '', '', '', '', '', ''
-                ]);
+                if (r.type === 'fee') {
+                    excelData.push([
+                        r.date, r.xianyuAmount, r.fee.toFixed(2), r.alipay.toFixed(2), r.hemaActual, r.refund.toFixed(2), '', r.actualProfit.toFixed(2), '', '', '', '', '', '', '', ''
+                    ]);
+                } else {
+                    excelData.push([
+                        '', '', '', '', '', '', '', '', '', r.date, r.xianyuAmount, r.hemaActual, r.fee.toFixed(2), r.alipay.toFixed(2), r.refund.toFixed(2), r.actualProfit.toFixed(2)
+                    ]);
+                }
             });
             
             await fetch('/api/save', {
