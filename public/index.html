@@ -614,15 +614,20 @@
             }
             
             allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-            await saveToServer();
+            const saveSuccess = await saveToServer();
             closeModal();
             renderRecords();
             updateStats();
-            showToast('保存成功');
+            if (saveSuccess) {
+                showToast('✅ 保存成功');
+            } else {
+                showToast('⚠️ 保存失败，请重试');
+            }
         }
         
         async function saveToServer() {
             const userId = viewingUserId || currentUser.id;
+            let saved = false;
             
             // 保存数据带重试
             for (let i = 0; i < 3; i++) {
@@ -635,11 +640,12 @@
                     const result = await res.json();
                     if (result.success) {
                         console.log('数据保存成功');
-                        return;
+                        saved = true;
+                        return true;
                     }
                     if (!result.error?.includes('数据库未连接')) {
                         console.log('保存失败:', result.error);
-                        return;
+                        return false;
                     }
                     console.log('数据库未连接，重试保存...');
                     await new Promise(r => setTimeout(r, 2000 * (i + 1)));
@@ -649,6 +655,7 @@
                 }
             }
             console.log('数据保存最终失败');
+            return false;
         }
         
         function exportExcel() {
