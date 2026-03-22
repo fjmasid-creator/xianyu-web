@@ -6,7 +6,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://xianyu_user:xianyu123@cluster0.go2qogg.mongodb.net/?appName=Cluster0&retryWrites=true&w=majority&maxPoolSize=10&minPoolSize=1';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://xianyu_user:xianyu123@cluster0.go2qogg.mongodb.net/?appName=Cluster0&retryWrites=true&w=majority';
 
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = '112211';
