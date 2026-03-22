@@ -134,7 +134,8 @@ app.get('/api/export', async (req, res) => {
         XLSX.utils.book_append_sheet(wb, worksheet, 'Sheet1');
         const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
         
-        res.setHeader('Content-Disposition', 'attachment; filename=闲鱼代结账.xlsx');
+        const filename = 'xianyu_' + Date.now() + '.xlsx';
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(buffer);
     } catch (err) {
