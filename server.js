@@ -9,6 +9,10 @@ const app = express();
 // MongoDB 配置
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://xianyu_user:xianyu123@cluster0.go2qogg.mongodb.net/?appName=Cluster0';
 
+// 主账号配置
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = '112211';
+
 let db;
 let usersCollection;
 let dataCollection;
@@ -25,6 +29,18 @@ async function connectDB() {
         // 创建索引
         await usersCollection.createIndex({ username: 1 }, { unique: true });
         
+        // 检查并创建主账号
+        const adminExists = await usersCollection.findOne({ username: ADMIN_USERNAME });
+        if (!adminExists) {
+            await usersCollection.insertOne({
+                username: ADMIN_USERNAME,
+                password: ADMIN_PASSWORD,
+                isAdmin: true,
+                createdAt: new Date()
+            });
+            console.log('Admin account created');
+        }
+        
         console.log('Connected to MongoDB');
     } catch (err) {
         console.error('MongoDB connection error:', err.message);
@@ -36,7 +52,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// 首页 - 检查是否已登录
+// 首页
 app.get('/', (req, res) => {
     const fs = require('fs');
     const htmlPath = path.join(__dirname, 'public', 'index.html');
@@ -44,33 +60,6 @@ app.get('/', (req, res) => {
         res.sendFile(htmlPath);
     } else {
         res.send('<h1>闲鱼代结账</h1><p>Loading...</p>');
-    }
-});
-
-// 注册
-app.post('/api/register', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        if (!username || !password) {
-            return res.json({ success: false, error: '请填写用户名和密码' });
-        }
-        
-        // 检查用户是否已存在
-        const existing = await usersCollection.findOne({ username });
-        if (existing) {
-            return res.json({ success: false, error: '用户名已存在' });
-        }
-        
-        // 创建用户
-        await usersCollection.insertOne({
-            username,
-            password, // 实际生产应该加密
-            createdAt: new Date()
-        });
-        
-        res.json({ success: true });
-    } catch (err) {
-        res.json({ success: false, error: err.message });
     }
 });
 
@@ -84,7 +73,56 @@ app.post('/api/login', async (req, res) => {
             return res.json({ success: false, error: '用户名或密码错误' });
         }
         
-        res.json({ success: true, user: { id: user._id, username: user.username } });
+        res.json({ success: true, user: { id: user._id.toString(), username: user.username, isAdmin: user.isAdmin || false } });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+});
+
+// 主账号创建子账号（只有主账号可用）
+app.post('/api/createuser', async (req, res) => {
+    try {
+        const { adminUsername, adminPassword, newUsername, newPassword } = req.body;
+        
+        // 验证主账号
+        const admin = await usersCollection.findOne({ username: adminUsername, password: adminPassword, isAdmin: true });
+        if (!admin) {
+            return res.json({ success: false, error: '主账号验证失败' });
+        }
+        
+        // 检查用户是否已存在
+        const existing = await usersCollection.findOne({ username: newUsername });
+        if (existing) {
+            return res.json({ success: false, error: '用户名已存在' });
+        }
+        
+        // 创建子账号
+        await usersCollection.insertOne({
+            username: newUsername,
+            password: newPassword,
+            isAdmin: false,
+            createdBy: adminUsername,
+            createdAt: new Date()
+        });
+        
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+});
+
+// 获取用户列表（只有主账号可用）
+app.get('/api/users', async (req, res) => {
+    try {
+        const adminId = req.query.adminId;
+        const admin = await usersCollection.findOne({ _id: require('mongodb').ObjectId.createFromHexString(adminId), isAdmin: true });
+        
+        if (!admin) {
+            return res.json({ success: false, error: '无权访问' });
+        }
+        
+        const users = await usersCollection.find({}, { projection: { password: 0 } }).toArray();
+        res.json({ success: true, users });
     } catch (err) {
         res.json({ success: false, error: err.message });
     }
@@ -100,7 +138,6 @@ app.get('/api/data', async (req, res) => {
         
         const records = await dataCollection.find({ userId }).sort({ date: -1 }).toArray();
         
-        // 转换为Excel格式
         const excelData = [
             ['收手续费', '', '', '', '', '', '', '', '', '免手续费'],
             ['日期', '闲鱼付款金额', '1.6的手续费', '支付宝到账', '盒马实际支付', '最多可退', '盒马会员卡利润', '实际利润', '', '日期', '闲鱼付款金额', '盒马实际支付', '手续费（1.6%）', '支付宝到账', '最多可退', '利润']
@@ -137,10 +174,8 @@ app.post('/api/save', async (req, res) => {
             return res.json({ success: false, error: '未登录' });
         }
         
-        // 先删除用户旧数据
         await dataCollection.deleteMany({ userId });
         
-        // 插入新数据
         if (records && records.length > 0) {
             const docs = records.map(r => ({
                 userId,

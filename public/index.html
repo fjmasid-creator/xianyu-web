@@ -25,11 +25,7 @@
             justify-content: center;
         }
         
-        .login-container {
-            width: 100%;
-            max-width: 360px;
-            padding: 20px;
-        }
+        .login-container { width: 100%; max-width: 360px; padding: 20px; }
         
         .login-card {
             background: var(--card-bg);
@@ -38,379 +34,108 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .login-header h1 {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        .login-header p {
-            color: var(--text-light);
-            font-size: 14px;
-        }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header h1 { font-size: 24px; margin-bottom: 8px; }
+        .login-header p { color: var(--text-light); font-size: 14px; }
         
-        .login-tabs {
-            display: flex;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-        }
-        .login-tabs .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 15px;
-            color: var(--text-light);
-            border-bottom: 2px solid transparent;
-        }
-        .login-tabs .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            font-weight: 500;
-        }
-        
-        .login-form {
-            display: none;
-        }
-        .login-form.active {
-            display: block;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-light);
-            margin-bottom: 6px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 15px;
-        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-light); margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; }
         
         .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px;
         }
         
-        .error-msg {
-            color: #dc2626;
-            font-size: 13px;
-            text-align: center;
-            margin-top: 12px;
-            display: none;
-        }
-        .error-msg.show {
-            display: block;
-        }
+        .error-msg { color: #dc2626; font-size: 13px; text-align: center; margin-top: 12px; display: none; }
+        .error-msg.show { display: block; }
         
-        .main-app {
-            display: none;
-            width: 100%;
-            max-width: 420px;
-            background: var(--card-bg);
-            min-height: 100vh;
-            box-shadow: 0 0 40px rgba(0,0,0,0.1);
-        }
+        .main-app { display: none; width: 100%; max-width: 420px; background: var(--card-bg); min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
         @media (min-width: 440px) {
-            .main-app {
-                min-height: auto;
-                border-radius: 20px;
-                margin: 20px auto;
-            }
+            .main-app { min-height: auto; border-radius: 20px; margin: 20px auto; }
         }
         
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
-            color: white;
-            padding: 20px;
-        }
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%); color: white; padding: 20px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header h1 { font-size: 16px; font-weight: 600; }
         .header .total-value { font-size: 22px; font-weight: 700; }
         .header .total-label { font-size: 11px; opacity: 0.8; margin-top: 2px; }
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-        }
+        .logout-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 16px 20px;
-            background: var(--bg);
-        }
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 12px 8px;
-            text-align: center;
-        }
+        .admin-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-right: 8px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 16px 20px; background: var(--bg); }
+        .stat-card { background: var(--card-bg); border-radius: 10px; padding: 12px 8px; text-align: center; }
         .stat-card .label { font-size: 10px; color: var(--text-light); }
         .stat-card .value { font-size: 14px; font-weight: 700; margin-top: 2px; }
         .stat-card .value.green { color: var(--success); }
         
-        .month-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-        .month-bar button {
-            width: 28px; height: 28px;
-            border: none; background: var(--bg);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+        .month-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+        .month-bar button { width: 28px; height: 28px; border: none; background: var(--bg); border-radius: 6px; cursor: pointer; font-size: 14px; }
         .month-bar span { font-size: 14px; font-weight: 500; }
         
-        .action-row {
-            display: flex;
-            gap: 10px;
-            padding: 16px 20px;
-        }
-        .action-row .btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-        }
+        .action-row { display: flex; gap: 10px; padding: 16px 20px; }
+        .action-row .btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-outline { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
         
         .record-list { padding: 0 20px 20px; }
-        .record-card {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        .record-card .top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
+        .record-card { background: var(--bg); border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; }
+        .record-card .top { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .record-card .date { font-size: 13px; font-weight: 500; color: var(--text); }
         .record-card .profit { font-size: 16px; font-weight: 700; color: var(--success); }
-        .record-card .type-tag {
-            font-size: 10px;
-            padding: 2px 6px;
-            background: #fef3c7;
-            color: #d97706;
-            border-radius: 4px;
-            margin-left: 8px;
-        }
-        .record-card .details {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-        }
-        .record-card .detail-item {
-            text-align: center;
-            padding: 6px;
-            background: var(--card-bg);
-            border-radius: 6px;
-        }
+        .record-card .type-tag { font-size: 10px; padding: 2px 6px; background: #fef3c7; color: #d97706; border-radius: 4px; margin-left: 8px; }
+        .record-card .details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .record-card .detail-item { text-align: center; padding: 6px; background: var(--card-bg); border-radius: 6px; }
         .record-card .detail-item .Label { font-size: 9px; color: var(--text-light); }
         .record-card .detail-item .Value { font-size: 11px; font-weight: 500; color: var(--text); }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
-        }
-        
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
         .bottom-space { height: 20px; }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 16px;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto; padding: 16px; }
         .modal.active { display: flex; align-items: flex-start; justify-content: center; padding-top: 20px; }
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 380px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
+        .modal-content { background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 380px; padding: 20px; margin-bottom: 20px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .modal-header h2 { font-size: 16px; font-weight: 600; }
-        .modal-close { 
-            width: 28px; height: 28px; 
-            border: none; background: var(--bg);
-            border-radius: 50%; 
-            cursor: pointer; 
-        }
+        .modal-close { width: 28px; height: 28px; border: none; background: var(--bg); border-radius: 50%; cursor: pointer; }
         
-        .type-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        .type-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            background: var(--card-bg);
-            cursor: pointer;
-            text-align: center;
-        }
-        .type-btn.active {
-            border-color: var(--primary);
-            background: #eff6ff;
-        }
+        .user-list { max-height: 300px; overflow-y: auto; }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg); border-radius: 8px; margin-bottom: 8px; }
+        .user-item .name { font-weight: 500; }
+        .user-item .badge { font-size: 10px; padding: 2px 6px; background: var(--primary); color: white; border-radius: 4px; }
+        
+        .type-selector { display: flex; gap: 10px; margin-bottom: 16px; }
+        .type-btn { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 10px; background: var(--card-bg); cursor: pointer; text-align: center; }
+        .type-btn.active { border-color: var(--primary); background: #eff6ff; }
         .type-btn .text { font-size: 13px; font-weight: 500; }
         
-        .form-section {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 14px;
-        }
-        .form-section h3 {
-            font-size: 11px;
-            color: var(--text-light);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
+        .form-section { background: var(--bg); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+        .form-section h3 { font-size: 11px; color: var(--text-light); margin-bottom: 12px; text-transform: uppercase; }
         
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            color: var(--text);
-            background: var(--card-bg);
-        }
-        
-        .calc-results {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-        .calc-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-        }
+        .calc-results { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .calc-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
         .calc-item .Label { font-size: 10px; color: var(--text-light); }
         .calc-item .Value { font-size: 13px; font-weight: 600; margin-top: 2px; color: var(--text); }
         .calc-item .Value.green { color: var(--success); }
         
-        .save-btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-            background: var(--success);
-            color: white;
-        }
+        .save-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 16px; background: var(--success); color: white; }
         
-        .detail-header {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
-            color: white;
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
+        .detail-header { text-align: center; padding: 20px; background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%); color: white; border-radius: 12px; margin-bottom: 16px; }
         .detail-header .label { font-size: 12px; opacity: 0.9; }
         .detail-header .profit { font-size: 28px; font-weight: 700; margin-top: 4px; }
         
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-        .detail-item {
-            background: var(--bg);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-        }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .detail-item { background: var(--bg); border-radius: 8px; padding: 10px; text-align: center; }
         .detail-item .Label { font-size: 10px; color: var(--text-light); }
         .detail-item .Value { font-size: 13px; font-weight: 600; color: var(--text); }
         
-        .detail-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        .detail-actions .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-        }
+        .detail-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .detail-actions .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
         .btn-danger { background: #fef2f2; color: #dc2626; }
         .btn-edit { background: var(--primary); color: white; }
         
-        .toast {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            z-index: 2000;
-            display: none;
-        }
+        .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 2000; display: none; }
         .toast.show { display: block; }
     </style>
 </head>
@@ -420,45 +145,19 @@
         <div class="login-card">
             <div class="login-header">
                 <h1>💰 闲鱼代结账</h1>
-                <p>多用户版本</p>
+                <p>请登录</p>
             </div>
             
-            <div class="login-tabs">
-                <div class="tab active" onclick="switchTab('login')">登录</div>
-                <div class="tab" onclick="switchTab('register')">注册</div>
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="loginUsername" placeholder="请输入用户名">
             </div>
-            
-            <!-- 登录表单 -->
-            <div class="login-form active" id="loginForm">
-                <div class="form-group">
-                    <label>用户名</label>
-                    <input type="text" id="loginUsername" placeholder="请输入用户名">
-                </div>
-                <div class="form-group">
-                    <label>密码</label>
-                    <input type="password" id="loginPassword" placeholder="请输入密码">
-                </div>
-                <button class="login-btn" onclick="doLogin()">登录</button>
-                <div class="error-msg" id="loginError"></div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码">
             </div>
-            
-            <!-- 注册表单 -->
-            <div class="login-form" id="registerForm">
-                <div class="form-group">
-                    <label>用户名</label>
-                    <input type="text" id="regUsername" placeholder="请输入用户名">
-                </div>
-                <div class="form-group">
-                    <label>密码</label>
-                    <input type="password" id="regPassword" placeholder="请输入密码">
-                </div>
-                <div class="form-group">
-                    <label>确认密码</label>
-                    <input type="password" id="regPassword2" placeholder="请再次输入密码">
-                </div>
-                <button class="login-btn" onclick="doRegister()">注册</button>
-                <div class="error-msg" id="regError"></div>
-            </div>
+            <button class="login-btn" onclick="doLogin()">登录</button>
+            <div class="error-msg" id="loginError"></div>
         </div>
     </div>
     
@@ -467,7 +166,10 @@
         <div class="header">
             <div class="header-top">
                 <h1>💰 闲鱼代结账</h1>
-                <button class="logout-btn" onclick="logout()">退出</button>
+                <div>
+                    <button class="admin-btn" id="adminManageBtn" style="display:none" onclick="showUserManage()">管理</button>
+                    <button class="logout-btn" onclick="logout()">退出</button>
+                </div>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px">
                 <div>
@@ -478,18 +180,9 @@
         </div>
         
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="label">今日</div>
-                <div class="value green" id="todayProfit">¥0</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">本月</div>
-                <div class="value green" id="monthProfit">¥0</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">共笔</div>
-                <div class="value" id="recordCount">0</div>
-            </div>
+            <div class="stat-card"><div class="label">今日</div><div class="value green" id="todayProfit">¥0</div></div>
+            <div class="stat-card"><div class="label">本月</div><div class="value green" id="monthProfit">¥0</div></div>
+            <div class="stat-card"><div class="label">共笔</div><div class="value" id="recordCount">0</div></div>
         </div>
         
         <div class="month-bar">
@@ -503,11 +196,34 @@
             <button class="btn btn-primary" onclick="openAddModal()">➕ 记一笔</button>
         </div>
         
-        <div class="record-list" id="recordList">
-            <div class="empty-state"><p>暂无记录</p></div>
-        </div>
-        
+        <div class="record-list" id="recordList"><div class="empty-state"><p>暂无记录</p></div></div>
         <div class="bottom-space"></div>
+    </div>
+    
+    <!-- 用户管理弹窗 -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>用户管理</h2>
+                <button class="modal-close" onclick="closeUserModal()"></button>
+            </div>
+            <div class="form-section">
+                <h3>添加新用户</h3>
+                <div class="form-group">
+                    <label>新用户名</label>
+                    <input type="text" id="newUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="newPassword" placeholder="请输入密码">
+                </div>
+                <button class="login-btn" onclick="createUser()">创建用户</button>
+            </div>
+            <div class="form-section">
+                <h3>已有用户</h3>
+                <div class="user-list" id="userList"></div>
+            </div>
+        </div>
     </div>
     
     <!-- 添加弹窗 -->
@@ -519,33 +235,20 @@
             </div>
             
             <div class="type-selector">
-                <div class="type-btn active" id="typeFee" onclick="selectType('fee')">
-                    <div class="text">收手续费</div>
-                </div>
-                <div class="type-btn" id="typeNoFee" onclick="selectType('nofee')">
-                    <div class="text">免手续费</div>
-                </div>
+                <div class="type-btn active" id="typeFee" onclick="selectType('fee')"><div class="text">收手续费</div></div>
+                <div class="type-btn" id="typeNoFee" onclick="selectType('nofee')"><div class="text">免手续费</div></div>
             </div>
             
             <form id="recordForm" onsubmit="saveRecord(event)">
                 <div class="form-section">
                     <h3>基本信息</h3>
-                    <div class="form-group">
-                        <label>日期</label>
-                        <input type="date" name="date" id="inputDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>闲鱼付款金额</label>
-                        <input type="number" name="xianyuAmount" id="inputAmount" step="0.01" placeholder="请输入客户付款金额" required oninput="calcResults()">
-                    </div>
+                    <div class="form-group"><label>日期</label><input type="date" name="date" id="inputDate" required></div>
+                    <div class="form-group"><label>闲鱼付款金额</label><input type="number" name="xianyuAmount" id="inputAmount" step="0.01" placeholder="请输入客户付款金额" required oninput="calcResults()"></div>
                 </div>
                 
                 <div class="form-section">
                     <h3>盒马消费</h3>
-                    <div class="form-group">
-                        <label>盒马实际支付</label>
-                        <input type="number" name="hemaActual" id="inputHema" step="0.01" placeholder="请输入盒马实际扣款" oninput="calcResults()">
-                    </div>
+                    <div class="form-group"><label>盒马实际支付</label><input type="number" name="hemaActual" id="inputHema" step="0.01" placeholder="请输入盒马实际扣款" oninput="calcResults()"></div>
                 </div>
                 
                 <div class="form-section">
@@ -555,7 +258,6 @@
                 
                 <input type="hidden" name="id" id="recordId">
                 <input type="hidden" name="type" id="recordType" value="fee">
-                
                 <button type="submit" class="save-btn">保存记录</button>
             </form>
         </div>
@@ -585,26 +287,12 @@
         let currentDetail = null;
         let recordType = 'fee';
         
-        // 检查登录状态
         function checkLogin() {
             const saved = localStorage.getItem('xianyu_user');
             if (saved) {
                 currentUser = JSON.parse(saved);
                 showMainApp();
                 init();
-            }
-        }
-        
-        function switchTab(tab) {
-            document.querySelectorAll('.login-tabs .tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
-            
-            if (tab === 'login') {
-                document.querySelectorAll('.login-tabs .tab')[0].classList.add('active');
-                document.getElementById('loginForm').classList.add('active');
-            } else {
-                document.querySelectorAll('.login-tabs .tab')[1].classList.add('active');
-                document.getElementById('registerForm').classList.add('active');
             }
         }
         
@@ -637,40 +325,6 @@
             }
         }
         
-        async function doRegister() {
-            const username = document.getElementById('regUsername').value;
-            const password = document.getElementById('regPassword').value;
-            const password2 = document.getElementById('regPassword2').value;
-            const errorEl = document.getElementById('regError');
-            
-            if (!username || !password) {
-                errorEl.textContent = '请填写用户名和密码';
-                errorEl.classList.add('show');
-                return;
-            }
-            
-            if (password !== password2) {
-                errorEl.textContent = '两次密码不一致';
-                errorEl.classList.add('show');
-                return;
-            }
-            
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const result = await res.json();
-            
-            if (result.success) {
-                showToast('注册成功，请登录');
-                switchTab('login');
-            } else {
-                errorEl.textContent = result.error;
-                errorEl.classList.add('show');
-            }
-        }
-        
         function logout() {
             localStorage.removeItem('xianyu_user');
             currentUser = null;
@@ -681,6 +335,62 @@
         function showMainApp() {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
+            
+            // 显示管理按钮（仅主账号）
+            if (currentUser && currentUser.isAdmin) {
+                document.getElementById('adminManageBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('adminManageBtn').style.display = 'none';
+            }
+        }
+        
+        async function showUserManage() {
+            const res = await fetch('/api/users?adminId=' + currentUser.id);
+            const result = await res.json();
+            
+            if (result.success) {
+                const list = document.getElementById('userList');
+                list.innerHTML = result.users.map(u => `
+                    <div class="user-item">
+                        <span class="name">${u.username}</span>
+                        ${u.isAdmin ? '<span class="badge">管理员</span>' : ''}
+                    </div>
+                `).join('');
+            }
+            document.getElementById('userModal').classList.add('active');
+        }
+        
+        function closeUserModal() { document.getElementById('userModal').classList.remove('active'); }
+        
+        async function createUser() {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            
+            if (!username || !password) {
+                showToast('请填写用户名和密码');
+                return;
+            }
+            
+            const res = await fetch('/api/createuser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    adminUsername: 'admin',
+                    adminPassword: '112211',
+                    newUsername: username,
+                    newPassword: password
+                })
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                showToast('用户创建成功');
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+                showUserManage();
+            } else {
+                showToast(result.error);
+            }
         }
         
         async function init() {
@@ -712,9 +422,7 @@
                 const row = data[i];
                 if (!row[0]) continue;
                 records.push({
-                    id: 'fee_' + i,
-                    type: 'fee',
-                    date: row[0],
+                    id: 'fee_' + i, type: 'fee', date: row[0],
                     xianyuAmount: parseFloat(row[1]) || 0,
                     fee: parseFloat(row[2]) || 0,
                     alipay: parseFloat(row[3]) || 0,
@@ -726,10 +434,7 @@
             return records;
         }
         
-        function changeMonth(delta) {
-            currentMonth.setMonth(currentMonth.getMonth() + delta);
-            renderRecords();
-        }
+        function changeMonth(delta) { currentMonth.setMonth(currentMonth.getMonth() + delta); renderRecords(); }
         
         function updateMonthDisplay() {
             const y = currentMonth.getFullYear();
@@ -767,7 +472,6 @@
         function updateStats() {
             const today = new Date().toISOString().substring(0, 10);
             const thisMonth = currentMonth.toISOString().substring(0, 7);
-            
             let todayP = 0, monthP = 0, totalP = 0;
             allRecords.forEach(r => {
                 const p = r.actualProfit || 0;
@@ -775,7 +479,6 @@
                 if (r.date === today) todayP += p;
                 if (r.date?.startsWith(thisMonth)) monthP += p;
             });
-            
             document.getElementById('todayProfit').textContent = '¥' + todayP.toFixed(2);
             document.getElementById('monthProfit').textContent = '¥' + monthP.toFixed(2);
             document.getElementById('totalProfit').textContent = '¥' + totalP.toFixed(2);
@@ -794,13 +497,11 @@
             const amount = parseFloat(document.getElementById('inputAmount').value) || 0;
             const hema = parseFloat(document.getElementById('inputHema').value) || 0;
             const container = document.getElementById('calcResults');
-            
             let html = '';
             
             if (amount > 0) {
                 const fee = amount * 0.016;
                 const alipay = amount - fee;
-                
                 let refund, profit;
                 
                 if (recordType === 'fee') {
@@ -818,14 +519,8 @@
                     <div class="calc-item"><div class="Label">利润(4%)</div><div class="Value green">¥${profit.toFixed(2)}</div></div>
                 `;
             } else {
-                html = `
-                    <div class="calc-item"><div class="Label">-</div><div class="Value">¥0.00</div></div>
-                    <div class="calc-item"><div class="Label">-</div><div class="Value">¥0.00</div></div>
-                    <div class="calc-item"><div class="Label">-</div><div class="Value">¥0.00</div></div>
-                    <div class="calc-item"><div class="Label">-</div><div class="Value">¥0.00</div></div>
-                `;
+                html = '<div class="calc-item"><div class="Label">-</div><div class="Value">¥0.00</div></div>'.repeat(4);
             }
-            
             container.innerHTML = html;
         }
         
@@ -833,12 +528,8 @@
             const r = allRecords.find(x => x.id === id);
             if (!r) return;
             currentDetail = r;
-            
             document.getElementById('detailContent').innerHTML = `
-                <div class="detail-header">
-                    <div class="label">${r.type === 'fee' ? '收手续费' : '免手续费'} · 利润</div>
-                    <div class="profit">+¥${r.actualProfit.toFixed(2)}</div>
-                </div>
+                <div class="detail-header"><div class="label">${r.type === 'fee' ? '收手续费' : '免手续费'} · 利润</div><div class="profit">+¥${r.actualProfit.toFixed(2)}</div></div>
                 <div class="detail-grid">
                     <div class="detail-item"><div class="Label">日期</div><div class="Value">${r.date}</div></div>
                     <div class="detail-item"><div class="Label">闲鱼付款</div><div class="Value">¥${r.xianyuAmount}</div></div>
@@ -897,27 +588,15 @@
             
             const fee = amount * 0.016;
             const alipay = amount - fee;
-            
             let refund, profit;
             
-            if (type === 'fee') {
-                refund = alipay - hema;
-                profit = hema * 0.04;
-            } else {
-                refund = amount - hema;
-                profit = hema * 0.04 - fee;
-            }
+            if (type === 'fee') { refund = alipay - hema; profit = hema * 0.04; }
+            else { refund = amount - hema; profit = hema * 0.04 - fee; }
             
             let data = {
-                id: form.id.value,
-                type: type,
-                date: form.date.value,
-                xianyuAmount: amount,
-                hemaActual: hema,
-                fee: fee,
-                alipay: alipay,
-                refund: refund,
-                actualProfit: profit
+                id: form.id.value, type: type, date: form.date.value,
+                xianyuAmount: amount, hemaActual: hema,
+                fee: fee, alipay: alipay, refund: refund, actualProfit: profit
             };
             
             if (data.id) {
@@ -929,7 +608,6 @@
             }
             
             allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
             await saveToServer();
             closeModal();
             renderRecords();
@@ -945,9 +623,7 @@
             });
         }
         
-        function exportExcel() {
-            window.location.href = '/api/export?userId=' + currentUser.id;
-        }
+        function exportExcel() { window.location.href = '/api/export?userId=' + currentUser.id; }
         
         function showToast(msg) {
             const t = document.getElementById('toast');
@@ -956,7 +632,6 @@
             setTimeout(() => t.classList.remove('show'), 2000);
         }
         
-        // 初始化
         checkLogin();
     </script>
 </body>
