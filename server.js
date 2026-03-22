@@ -6,7 +6,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://xianyu_user:xianyu123@cluster0.go2qogg.mongodb.net/?appName=Cluster0';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://xianyu_user:xianyu123@cluster0.go2qogg.mongodb.net/?appName=Cluster0&retryWrites=true&w=majority&maxPoolSize=10&minPoolSize=1';
 
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = '112211';
@@ -18,8 +18,18 @@ let dbConnected = false;
 
 async function connectDB() {
     try {
-        const client = new MongoClient(MONGO_URI);
+        const client = new MongoClient(MONGO_URI, {
+            maxPoolSize: 10,
+            minPoolSize: 1,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        });
+        
         await client.connect();
+        
+        // 测试连接
+        await client.db('admin').command({ ping: 1 });
+        
         db = client.db('xianyu_db');
         usersCollection = db.collection('users');
         dataCollection = db.collection('records');
@@ -45,13 +55,27 @@ async function connectDB() {
         
         dbConnected = true;
         console.log('Connected to MongoDB');
+        
+        // 保持连接
+        setInterval(async () => {
+            try {
+                await client.db('admin').command({ ping: 1 });
+                dbConnected = true;
+            } catch (e) {
+                console.log('Ping failed, reconnecting...');
+                dbConnected = false;
+                await connectDB();
+            }
+        }, 60000);
+        
     } catch (err) {
         console.error('MongoDB connection error:', err.message);
         dbConnected = false;
+        // 30秒后重试
+        setTimeout(connectDB, 30000);
     }
 }
 
-// 等待连接完成
 connectDB();
 
 app.use(cors());
@@ -72,7 +96,9 @@ app.get('/', (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         if (!dbConnected || !usersCollection) {
-            return res.json({ success: false, error: '数据库未连接，请稍后重试' });
+            // 尝试重新连接
+            await connectDB();
+            return res.json({ success: false, error: '数据库连接中，请稍后重试' });
         }
         
         const { username, password } = req.body;
@@ -84,7 +110,8 @@ app.post('/api/login', async (req, res) => {
         
         res.json({ success: true, user: { id: user._id.toString(), username: user.username, isAdmin: user.isAdmin || false } });
     } catch (err) {
-        res.json({ success: false, error: err.message });
+        console.error('Login error:', err.message);
+        res.json({ success: false, error: '服务错误，请稍后重试' });
     }
 });
 
@@ -142,7 +169,7 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-// 删除用户（只有主账号可用）
+// 删除用户
 app.post('/api/deleteuser', async (req, res) => {
     try {
         if (!dbConnected || !usersCollection) {
@@ -170,7 +197,7 @@ app.post('/api/deleteuser', async (req, res) => {
     }
 });
 
-// 获取某个用户的数据
+// 获取数据
 app.get('/api/userdata', async (req, res) => {
     try {
         if (!dbConnected || !dataCollection) {
@@ -220,7 +247,6 @@ app.get('/api/userdata', async (req, res) => {
     }
 });
 
-// 获取当前用户数据
 app.get('/api/data', async (req, res) => {
     try {
         if (!dbConnected || !dataCollection) {
@@ -261,7 +287,6 @@ app.get('/api/data', async (req, res) => {
     }
 });
 
-// 保存数据
 app.post('/api/save', async (req, res) => {
     try {
         if (!dbConnected || !dataCollection) {
@@ -290,7 +315,6 @@ app.post('/api/save', async (req, res) => {
     }
 });
 
-// 导出Excel
 app.get('/api/export', async (req, res) => {
     try {
         let records = [];
