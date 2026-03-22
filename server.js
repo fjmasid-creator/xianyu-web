@@ -25,7 +25,7 @@ async function connectDB() {
         
         await usersCollection.createIndex({ username: 1 }, { unique: true });
         
-        const adminExists = await usersCollection.findOne({ username: ADMIN_USERNAME });
+        let adminExists = await usersCollection.findOne({ username: ADMIN_USERNAME });
         if (!adminExists) {
             await usersCollection.insertOne({
                 username: ADMIN_USERNAME,
@@ -34,6 +34,13 @@ async function connectDB() {
                 createdAt: new Date()
             });
             console.log('Admin account created');
+        } else if (!adminExists.isAdmin) {
+            // 确保admin有管理员权限
+            await usersCollection.updateOne(
+                { username: ADMIN_USERNAME },
+                { $set: { isAdmin: true } }
+            );
+            console.log('Admin isAdmin updated to true');
         }
         
         console.log('Connected to MongoDB');
