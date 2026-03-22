@@ -14,6 +14,7 @@ const ADMIN_PASSWORD = '112211';
 let db;
 let usersCollection;
 let dataCollection;
+let dbConnected = false;
 
 async function connectDB() {
     try {
@@ -35,7 +36,6 @@ async function connectDB() {
             });
             console.log('Admin account created');
         } else if (!adminExists.isAdmin) {
-            // 确保admin有管理员权限
             await usersCollection.updateOne(
                 { username: ADMIN_USERNAME },
                 { $set: { isAdmin: true } }
@@ -43,11 +43,15 @@ async function connectDB() {
             console.log('Admin isAdmin updated to true');
         }
         
+        dbConnected = true;
         console.log('Connected to MongoDB');
     } catch (err) {
         console.error('MongoDB connection error:', err.message);
+        dbConnected = false;
     }
 }
+
+// 等待连接完成
 connectDB();
 
 app.use(cors());
@@ -67,6 +71,10 @@ app.get('/', (req, res) => {
 // 登录
 app.post('/api/login', async (req, res) => {
     try {
+        if (!dbConnected || !usersCollection) {
+            return res.json({ success: false, error: '数据库未连接，请稍后重试' });
+        }
+        
         const { username, password } = req.body;
         
         const user = await usersCollection.findOne({ username, password });
@@ -83,6 +91,10 @@ app.post('/api/login', async (req, res) => {
 // 主账号添加用户
 app.post('/api/createuser', async (req, res) => {
     try {
+        if (!dbConnected || !usersCollection) {
+            return res.json({ success: false, error: '数据库未连接' });
+        }
+        
         const { adminUsername, adminPassword, newUsername, newPassword } = req.body;
         
         const admin = await usersCollection.findOne({ username: adminUsername, password: adminPassword, isAdmin: true });
@@ -112,6 +124,10 @@ app.post('/api/createuser', async (req, res) => {
 // 获取用户列表
 app.get('/api/users', async (req, res) => {
     try {
+        if (!dbConnected || !usersCollection) {
+            return res.json({ success: false, error: '数据库未连接' });
+        }
+        
         const adminId = req.query.adminId;
         const admin = await usersCollection.findOne({ _id: new ObjectId(adminId), isAdmin: true });
         
@@ -129,6 +145,10 @@ app.get('/api/users', async (req, res) => {
 // 删除用户（只有主账号可用）
 app.post('/api/deleteuser', async (req, res) => {
     try {
+        if (!dbConnected || !usersCollection) {
+            return res.json({ success: false, error: '数据库未连接' });
+        }
+        
         const { adminId, targetUserId } = req.body;
         
         const admin = await usersCollection.findOne({ _id: new ObjectId(adminId), isAdmin: true });
@@ -136,13 +156,11 @@ app.post('/api/deleteuser', async (req, res) => {
             return res.json({ success: false, error: '无权操作' });
         }
         
-        // 不能删除主账号
         const targetUser = await usersCollection.findOne({ _id: new ObjectId(targetUserId) });
         if (targetUser && targetUser.isAdmin) {
             return res.json({ success: false, error: '不能删除主账号' });
         }
         
-        // 删除用户及其数据
         await usersCollection.deleteOne({ _id: new ObjectId(targetUserId) });
         await dataCollection.deleteMany({ userId: targetUserId });
         
@@ -152,17 +170,19 @@ app.post('/api/deleteuser', async (req, res) => {
     }
 });
 
-// 获取某个用户的数据（主账号可以查看所有用户）
+// 获取某个用户的数据
 app.get('/api/userdata', async (req, res) => {
     try {
+        if (!dbConnected || !dataCollection) {
+            return res.json({ success: false, error: '数据库未连接' });
+        }
+        
         const adminId = req.query.adminId;
         const targetUserId = req.query.targetUserId;
         
         const admin = await usersCollection.findOne({ _id: new ObjectId(adminId), isAdmin: true });
         
         let userId = targetUserId;
-        
-        // 如果不是主账号，只能看自己的数据
         if (!admin) {
             userId = adminId;
         }
@@ -203,6 +223,10 @@ app.get('/api/userdata', async (req, res) => {
 // 获取当前用户数据
 app.get('/api/data', async (req, res) => {
     try {
+        if (!dbConnected || !dataCollection) {
+            return res.json({ success: false, error: '数据库未连接' });
+        }
+        
         const userId = req.query.userId;
         if (!userId) {
             return res.json({ success: false, error: '未登录' });
@@ -240,6 +264,10 @@ app.get('/api/data', async (req, res) => {
 // 保存数据
 app.post('/api/save', async (req, res) => {
     try {
+        if (!dbConnected || !dataCollection) {
+            return res.json({ success: false, error: '数据库未连接' });
+        }
+        
         const { userId, records } = req.body;
         
         if (!userId) {
@@ -265,11 +293,12 @@ app.post('/api/save', async (req, res) => {
 // 导出Excel
 app.get('/api/export', async (req, res) => {
     try {
-        const userId = req.query.userId;
-        
         let records = [];
-        if (userId) {
-            records = await dataCollection.find({ userId }).sort({ date: -1 }).toArray();
+        if (dbConnected && dataCollection) {
+            const userId = req.query.userId;
+            if (userId) {
+                records = await dataCollection.find({ userId }).sort({ date: -1 }).toArray();
+            }
         }
         
         const excelData = [
