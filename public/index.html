@@ -242,20 +242,31 @@
                 return;
             }
             
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const result = await res.json();
+            // 登录添加重试
+            let result = null;
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const res = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    result = await res.json();
+                    if (result.success || !result.error?.includes('数据库未连接')) break;
+                    console.log('登录重试...');
+                    await new Promise(r => setTimeout(r, 2000));
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+            }
             
-            if (result.success) {
+            if (result && result.success) {
                 currentUser = result.user;
                 localStorage.setItem('xianyu_user', JSON.stringify(currentUser));
                 showMainApp();
                 init();
             } else {
-                errorEl.textContent = result.error;
+                errorEl.textContent = result?.error || '登录失败';
                 errorEl.classList.add('show');
             }
         }
@@ -377,18 +388,41 @@
             calcResults();
         }
         
+        // 带重试的 fetch
+        async function fetchWithRetry(url, options = {}, maxRetries = 3) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const res = await fetch(url, options);
+                    const result = await res.json();
+                    // 如果返回"数据库未连接"，稍等后重试
+                    if (result.error && result.error.includes('数据库未连接')) {
+                        console.log(`数据库未连接，${i+1}/${maxRetries}次重试...`);
+                        await new Promise(r => setTimeout(r, 2000 * (i + 1)));
+                        continue;
+                    }
+                    return result;
+                } catch (err) {
+                    if (i === maxRetries - 1) throw err;
+                    await new Promise(r => setTimeout(r, 2000 * (i + 1)));
+                }
+            }
+            return { success: false, error: '重试失败' };
+        }
+        
         async function loadData() {
             try {
                 const userId = viewingUserId || currentUser.id;
-                const res = await fetch('/api/data?userId=' + userId);
-                const result = await res.json();
+                const result = await fetchWithRetry('/api/data?userId=' + userId);
                 if (result.success && result.data && result.data.length > 2) {
                     allRecords = parseExcelData(result.data);
                 } else {
+                    if (result.error) {
+                        console.log('加载数据失败:', result.error);
+                    }
                     allRecords = [];
                 }
             } catch (err) {
-                showToast('加载失败');
+                console.log('加载失败:', err);
                 allRecords = [];
             }
         }
@@ -589,11 +623,32 @@
         
         async function saveToServer() {
             const userId = viewingUserId || currentUser.id;
-            await fetch('/api/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: userId, records: allRecords })
-            });
+            
+            // 保存数据带重试
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const res = await fetch('/api/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: userId, records: allRecords })
+                    });
+                    const result = await res.json();
+                    if (result.success) {
+                        console.log('数据保存成功');
+                        return;
+                    }
+                    if (!result.error?.includes('数据库未连接')) {
+                        console.log('保存失败:', result.error);
+                        return;
+                    }
+                    console.log('数据库未连接，重试保存...');
+                    await new Promise(r => setTimeout(r, 2000 * (i + 1)));
+                } catch (err) {
+                    console.log('保存出错，重试...');
+                    await new Promise(r => setTimeout(r, 2000 * (i + 1)));
+                }
+            }
+            console.log('数据保存最终失败');
         }
         
         function exportExcel() {
