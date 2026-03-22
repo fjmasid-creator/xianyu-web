@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闲鱼代结账 - 在线编辑</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 { margin: 0; color: #333; }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .btn-primary { background: #1890ff; color: white; }
+        .btn-success { background: #52c41a; color: white; }
+        .btn-danger { background: #ff4d4f; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .table-container {
+            overflow: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-height: 80vh;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 2000px;
+        }
+        th, td {
+            border: 1px solid #e8e8e8;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 13px;
+            min-width: 80px;
+        }
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 13px;
+            padding: 4px;
+        }
+        td input:focus {
+            background: #e6f7ff;
+            outline: none;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .status.success { background: #f6ffed; color: #52c41a; display: block; }
+        .status.error { background: #fff2f0; color: #ff4d4f; display: block; }
+        .section-title {
+            background: #fff7e6;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 闲鱼代结账 - 在线编辑</h1>
+        <div>
+            <button class="btn btn-primary" onclick="addRow()">➕ 添加行</button>
+            <button class="btn btn-success" onclick="saveData()">💾 保存</button>
+            <button class="btn btn-danger" onclick="exportExcel()">📥 导出Excel</button>
+        </div>
+    </div>
+    
+    <div id="status" class="status"></div>
+    
+    <div class="table-container">
+        <div id="table" class="loading">加载中...</div>
+    </div>
+
+    <script>
+        let tableData = [];
+        
+        // 加载数据
+        async function loadData() {
+            try {
+                const res = await fetch('/api/data');
+                const result = await res.json();
+                if (result.success) {
+                    tableData = result.data;
+                    renderTable();
+                } else {
+                    showStatus('加载失败: ' + result.error, 'error');
+                }
+            } catch (err) {
+                showStatus('加载失败: ' + err.message, 'error');
+            }
+        }
+        
+        // 渲染表格
+        function renderTable() {
+            const table = document.getElementById('table');
+            if (tableData.length === 0) {
+                table.innerHTML = '<div class="loading">暂无数据</div>';
+                return;
+            }
+            
+            let html = '<table><thead><tr>';
+            
+            // 表头
+            tableData[0].forEach((cell, i) => {
+                html += `<th>${cell || ''}</th>`;
+            });
+            html += '<th>操作</th></tr></thead><tbody>';
+            
+            // 数据行
+            for (let r = 1; r < tableData.length; r++) {
+                html += '<tr>';
+                for (let c = 0; c < tableData[0].length; c++) {
+                    const value = tableData[r][c] || '';
+                    const isFormula = value === '公式' || value === '';
+                    html += `<td><input type="text" value="${value}" data-row="${r}" data-col="${c}" ${isFormula ? 'readonly' : ''}></td>`;
+                }
+                html += `<td><button class="btn btn-danger" style="padding:4px 8px;font-size:12px" onclick="deleteRow(${r})">删除</button></td>`;
+                html += '</tr>';
+            }
+            
+            html += '</tbody></table>';
+            table.innerHTML = html;
+            
+            // 绑定输入事件
+            document.querySelectorAll('td input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const r = parseInt(e.target.dataset.row);
+                    const c = parseInt(e.target.dataset.col);
+                    const val = e.target.value;
+                    tableData[r][c] = isNaN(val) ? val : (val === '' ? null : val);
+                });
+            });
+        }
+        
+        // 添加行
+        function addRow() {
+            const newRow = new Array(tableData[0].length).fill(null);
+            tableData.push(newRow);
+            renderTable();
+        }
+        
+        // 删除行
+        function deleteRow(rowIndex) {
+            if (confirm('确定删除第 ' + rowIndex + ' 行吗？')) {
+                tableData.splice(rowIndex, 1);
+                renderTable();
+            }
+        }
+        
+        // 保存数据
+        async function saveData() {
+            try {
+                const res = await fetch('/api/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: tableData })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showStatus('保存成功！', 'success');
+                } else {
+                    showStatus('保存失败: ' + result.error, 'error');
+                }
+            } catch (err) {
+                showStatus('保存失败: ' + err.message, 'error');
+            }
+        }
+        
+        // 导出Excel
+        function exportExcel() {
+            window.location.href = '/api/export';
+        }
+        
+        // 显示状态
+        function showStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = 'status ' + type;
+            setTimeout(() => { el.className = 'status'; }, 3000);
+        }
+        
+        // 初始化
+        loadData();
+    </script>
+</body>
+</html>
